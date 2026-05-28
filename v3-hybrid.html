@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portraithy · v3-hybrid</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#090e16; --bg2:#0d1320; --bg3:#111826;
+  --surf:#141e2c; --surf2:#192436;
+  --bdr:#1c2a3e; --bdr2:#243245;
+  --text:#dde6f0; --text2:#7a96b0; --text3:#3d5468;
+  --blue:#1d4ed8; --blue-bg:#071428; --blue-hi:#60a5fa;
+  --green:#16a34a; --green-bg:#071a0d; --green-hi:#22c55e;
+  --gold:#a16207; --gold-bg:#1a1100; --gold-hi:#eab308;
+  --gray:#475569; --gray-bg:#111827; --gray-hi:#94a3b8;
+  --teal:#0e7490; --teal-bg:#051820; --teal-hi:#22d3ee;
+  --pos:#22c55e; --neg:#f87171; --warn:#fbbf24;
+  --r:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
+
+/* NAV BAR — версии */
+.version-bar{
+  background:#060a10; border-bottom:1px solid var(--bdr);
+  padding:8px 24px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.version-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-right:4px;}
+.v-btn{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;
+  border:1px solid var(--bdr2);color:var(--text2);background:none;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:all .2s;
+}
+.v-btn:hover{color:var(--text);border-color:var(--text2);}
+.v-btn.current{background:var(--blue-bg);color:var(--blue-hi);border-color:var(--blue);}
+
+/* HEADER */
+.hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 24px;border-bottom:1px solid var(--bdr);
+  background:var(--bg2);position:sticky;top:0;z-index:100;
+}
+.hdr-logo{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
+.hdr-logo span{color:var(--blue-hi);}
+.hdr-sub{font-size:11px;color:var(--text2);}
+.hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
+.saved-badge{
+  font-size:10px;padding:3px 10px;border-radius:99px;
+  background:var(--green-bg);color:var(--green-hi);border:1px solid var(--green);
+  display:none;
+}
+.changed-badge{
+  font-size:10px;padding:3px 10px;border-radius:99px;
+  background:var(--gold-bg);color:var(--warn);border:1px solid var(--gold);
+  display:none;animation:pulse 2s infinite;
+}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* TABS */
+.tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 24px;overflow-x:auto;}
+.tab{
+  padding:12px 16px;font-size:12px;font-weight:500;color:var(--text2);
+  background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;
+  transition:color .2s,border-color .2s;display:flex;align-items:center;gap:5px;
+}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);border-bottom-color:var(--blue-hi);}
+
+/* MAIN */
+.main{padding:24px;max-width:1400px;margin:0 auto;}
+.panel{display:none;}
+.panel.active{display:block;}
+.sec-title{font-size:19px;font-weight:800;margin-bottom:4px;letter-spacing:-.4px;}
+.sec-sub{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+
+.cat-card{border-radius:var(--r);border:1.5px solid transparent;overflow:hidden;transition:transform .2s,box-shadow .2s;}
+.cat-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4);}
+.cat-card[data-color="blue"]  {background:var(--blue-bg);border-color:var(--blue);}
+.cat-card[data-color="green"] {background:var(--green-bg);border-color:var(--green);}
+.cat-card[data-color="gold"]  {background:var(--gold-bg);border-color:var(--gold);}
+.cat-card[data-color="gray"]  {background:var(--gray-bg);border-color:var(--gray);}
+.cat-card[data-color="teal"]  {background:var(--teal-bg);border-color:var(--teal);}
+
+.card-head{padding:12px 14px 14px;}
+.cat-card[data-color="blue"]  .card-head{background:#1d4ed8;}
+.cat-card[data-color="green"] .card-head{background:#15803d;}
+.cat-card[data-color="gold"]  .card-head{background:#854d0e;}
+.cat-card[data-color="gray"]  .card-head{background:#374151;}
+.cat-card[data-color="teal"]  .card-head{background:#0e7490;}
+
+.card-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:3px;}
+.card-name{font-size:18px;font-weight:900;color:#fff;line-height:1;margin-bottom:2px;}
+.card-price{font-size:24px;font-weight:900;color:#fff;font-family:'JetBrains Mono',monospace;}
+.card-body{padding:12px 14px;}
+.card-slogan{font-size:10px;font-style:italic;color:var(--text3);margin-bottom:8px;}
+.card-sep{border:none;border-top:1px solid rgba(255,255,255,.08);margin-bottom:8px;}
+.feat-list{list-style:none;margin-bottom:10px;}
+.feat-list li{display:flex;gap:5px;align-items:flex-start;font-size:10.5px;color:#b0c4d8;margin-bottom:3px;line-height:1.4;}
+.feat-list li .ck{color:var(--green-hi);font-weight:700;flex-shrink:0;}
+.art-badge{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa;margin-left:3px;}
+.card-footer{border-top:1px solid rgba(255,255,255,.07);padding-top:8px;font-size:9.5px;color:var(--text3);}
+.card-stats{font-weight:700;color:var(--text2);margin-top:1px;}
+
+/* ── FINANCE ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
+.kpi-lbl{font-size:10px;color:var(--text3);margin-bottom:4px;}
+.kpi-val{font-size:22px;font-weight:900;font-family:'JetBrains Mono',monospace;}
+.kpi-sub{font-size:10px;color:var(--text2);margin-top:2px;}
+
+.ftable{width:100%;border-collapse:separate;border-spacing:0 5px;}
+.ftable th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:left;background:var(--surf);letter-spacing:.4px;text-transform:uppercase;}
+.ftable th:first-child{border-radius:6px 0 0 6px;}.ftable th:last-child{border-radius:0 6px 6px 0;}
+.ftable td{padding:9px 11px;font-size:12px;vertical-align:middle;}
+.ftable td:first-child{border-radius:6px 0 0 6px;}.ftable td:last-child{border-radius:0 6px 6px 0;}
+.row-teal   td{background:#030d12;}
+.row-blue   td{background:#060f1e;}
+.row-green  td{background:#040e06;}
+.row-gold   td{background:#0e0900;}
+.row-gray   td{background:#0b0f14;}
+.row-total  td{background:var(--surf2);font-weight:700;}
+.pos{color:var(--pos);font-weight:600;}
+.neg{color:var(--neg);}
+.neu{color:var(--text2);}
+.mono{font-family:'JetBrains Mono',monospace;}
+
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:28px;}
+.pc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;}
+.pc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.pc-dot{width:9px;height:9px;border-radius:50%;}
+.pc-dot.blue{background:var(--blue-hi);}.pc-dot.green{background:var(--green-hi);}
+.pc-dot.gold{background:var(--gold-hi);}.pc-dot.gray{background:var(--gray-hi);}
+.pc-dot.teal{background:var(--teal-hi);}
+.pc-name{font-size:14px;font-weight:800;}
+.pc-name.blue{color:var(--blue-hi);}.pc-name.green{color:var(--green-hi);}
+.pc-name.gold{color:var(--gold-hi);}.pc-name.gray{color:var(--gray-hi);}
+.pc-name.teal{color:var(--teal-hi);}
+.pc-name-input{
+  background:transparent;border:none;outline:none;
+  font-size:14px;font-weight:800;width:100%;
+  font-family:'Inter',sans-serif;
+}
+.pc-name-input.blue{color:var(--blue-hi);}.pc-name-input.green{color:var(--green-hi);}
+.pc-name-input.gold{color:var(--gold-hi);}.pc-name-input.gray{color:var(--gray-hi);}
+.pc-name-input.teal{color:var(--teal-hi);}
+
+.price-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.price-lbl{font-size:11px;color:var(--text2);width:80px;}
+.price-wrap{display:flex;align-items:center;gap:6px;flex:1;}
+.price-dollar{font-size:15px;font-weight:700;color:var(--text2);}
+.price-inp{
+  width:75px;background:var(--bg3);border:1px solid var(--bdr2);
+  border-radius:6px;padding:5px 8px;
+  font-size:16px;font-weight:800;color:var(--text);
+  font-family:'JetBrains Mono',monospace;text-align:center;
+}
+.price-inp:focus{outline:none;border-color:var(--blue-hi);}
+.price-range{width:100%;accent-color:var(--blue-hi);margin-bottom:3px;}
+.price-range-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);}
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg3);border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;
+}
+.info-row-lbl{color:var(--text3);}
+.info-row-val{font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;}
+
+.del-btn{
+  margin-top:10px;width:100%;padding:6px;
+  background:none;border:1px dashed #3a1a1a;color:var(--neg);
+  border-radius:6px;font-size:11px;cursor:pointer;transition:background .15s;
+}
+.del-btn:hover{background:rgba(248,113,113,.08);}
+
+/* DND */
+.dnd-wrap{margin-bottom:24px;}
+.dnd-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.dnd-sub{font-size:11px;color:var(--text2);margin-bottom:14px;}
+.dnd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.dnd-col{
+  background:var(--surf);border:1px solid var(--bdr);
+  border-radius:var(--r);padding:10px;min-height:160px;
+  transition:border-color .2s,background .2s;
+}
+.dnd-col.drag-over{border-color:var(--blue-hi);background:#071428;}
+.dnd-col-head{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.dnd-items{display:flex;flex-direction:column;gap:4px;min-height:80px;}
+.dnd-item{
+  background:var(--bg3);border:1px solid var(--bdr2);
+  border-radius:6px;padding:5px 8px;
+  font-size:10px;color:var(--text2);
+  cursor:grab;display:flex;align-items:flex-start;gap:5px;
+  transition:background .15s,transform .15s;user-select:none;
+}
+.dnd-item:hover{background:var(--surf2);transform:scale(1.01);}
+.dnd-item.dragging{opacity:.4;cursor:grabbing;}
+.src-badge{
+  font-size:8px;padding:1px 4px;border-radius:3px;
+  font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace;
+}
+.sk1,.sk2{background:#1e3a5f;color:#60a5fa;}
+.sk3,.sk4{background:#14401f;color:#4ade80;}
+.sk5,.sk6{background:#3d2400;color:#fcd34d;}
+.sk7{background:#2d1b4e;color:#c4b5fd;}
+.sa{background:#0a2a2a;color:#22d3ee;}
+.dnd-item .feat-text{flex:1;line-height:1.4;}
+.dnd-item .ord-chip{font-size:8px;color:var(--text3);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+
+/* ACTION BUTTONS */
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;margin-bottom:28px;}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid;transition:all .2s;
+}
+.btn-save{background:var(--green-bg);color:var(--green-hi);border-color:var(--green);}
+.btn-save:hover{background:rgba(22,163,74,.2);}
+.btn-reset{background:var(--surf);color:var(--text2);border-color:var(--bdr2);}
+.btn-reset:hover{background:var(--surf2);color:var(--text);}
+.btn-add{background:var(--blue-bg);color:var(--blue-hi);border-color:var(--blue);}
+.btn-add:hover{background:rgba(29,78,216,.2);}
+
+/* DESC COMPARISON TAB */
+.desc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.desc-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
+.desc-card h3{font-size:13px;font-weight:700;margin-bottom:10px;}
+.desc-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--bdr);font-size:11px;line-height:1.5;
+}
+.desc-row:last-child{border-bottom:none;}
+.desc-row .d-us{color:#90b8d8;}
+.desc-row .d-art{color:#c4b5fd;}
+.match-chip{
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;margin-top:4px;display:inline-block;
+}
+.m-yes{background:rgba(34,197,94,.12);color:var(--green-hi);}
+.m-no{background:rgba(248,113,113,.12);color:var(--neg);}
+.m-part{background:rgba(251,191,36,.12);color:var(--warn);}
+
+/* Insight */
+.insight{background:#071428;border:1px solid var(--blue);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;}
+.insight h3{font-size:12px;font-weight:700;color:var(--blue-hi);margin-bottom:8px;}
+.insight p{font-size:11px;color:#90b8d8;line-height:1.7;}
+
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:99px;}
+</style>
+</head>
+<body>
+
+<!-- VERSION NAV -->
+<div class="version-bar">
+  <span class="version-label">Версии:</span>
+  <a class="v-btn" href="index.html">v1 — Исходный калькулятор (Vladimir)</a>
+  <a class="v-btn" href="comparison.html">v2 — Сравнение: наш vs Артём</a>
+  <span class="v-btn current">v3-hybrid — Гибрид (текущая)</span>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">Portraithy <span>·</span> v3-hybrid</div>
+    <div class="hdr-sub">5 категорий · нулевой вход · редактируемые цены · drag-and-drop</div>
+  </div>
+  <div class="hdr-right">
+    <div class="changed-badge" id="changedBadge">⚡ Есть изменения</div>
+    <div class="saved-badge" id="savedBadge">✓ Сохранено</div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="sw('offer',this)">🎯 Предложение</button>
+  <button class="tab" onclick="sw('finance',this)">📊 Финансы</button>
+  <button class="tab" onclick="sw('settings',this)">⚙️ Настройки</button>
+  <button class="tab" onclick="sw('descriptions',this)">📝 Описания</button>
+  <button class="tab" onclick="sw('source',this)">🗂 Исходные данные</button>
+</div>
+
+<div class="main">
+
+<!-- ══════════ TAB 1: ПРЕДЛОЖЕНИЕ ══════════ -->
+<div class="panel active" id="t-offer">
+  <div class="sec-title">Предложение: категории макетов</div>
+  <div class="sec-sub" id="offer-sub">v3-hybrid · нулевой вход + 4 маркетинговые категории</div>
+  <div class="cards-grid" id="cards-grid"></div>
+  <div class="insight">
+    <h3>💡 Логика v3-hybrid</h3>
+    <p>
+      Нулевая категория «Посмотрим вместе» ($0) — точка входа для нерешительных клиентов.
+      Снижает барьер до нуля, менеджер лично рекомендует тариф.<br><br>
+      Остальные 4 категории — наша маркетинговая логика по <strong>типу запроса</strong>
+      (не по количеству фото). Клиент выбирает <em>что хочет сделать</em>, а не
+      <em>сколько правок</em>. Описания улучшены по текстам Артёма.
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ TAB 2: ФИНАНСЫ ══════════ -->
+<div class="panel" id="t-finance">
+  <div class="sec-title">Финансовый эффект · v3-hybrid</div>
+  <div class="sec-sub">Нулевая категория не учитывается в выручке. Расчёт при сохранении объёмов 2025.</div>
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-lbl">Выручка факт 2025</div>
+      <div class="kpi-val neu">$108 480</div>
+      <div class="kpi-sub">базовая линия</div>
+    </div>
+    <div class="kpi" style="border-color:var(--blue);background:var(--blue-bg)">
+      <div class="kpi-lbl">По v3-hybrid</div>
+      <div class="kpi-val" style="color:var(--blue-hi)" id="kpi-rev">—</div>
+      <div class="kpi-sub">при сохранении объёмов</div>
+    </div>
+    <div class="kpi" style="border-color:var(--green);background:var(--green-bg)">
+      <div class="kpi-lbl">Прирост</div>
+      <div class="kpi-val pos" id="kpi-delta">—</div>
+      <div class="kpi-sub" id="kpi-pct">—</div>
+    </div>
+  </div>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table class="ftable" id="fin-table">
+      <thead><tr>
+        <th>Категория</th><th>Цена</th><th>Заказов</th>
+        <th>Выручка матрица</th><th>Выручка факт</th><th>vs факт</th>
+      </tr></thead>
+      <tbody id="fin-body"></tbody>
+    </table>
+  </div>
+  <div class="insight">
+    <h3>📌 Нулевая категория в финансах</h3>
+    <p id="fin-insight">Категория «Посмотрим вместе» ($0) не добавляет прямой выручки.
+    Косвенный эффект: нерешительные клиенты получают бесплатную консультацию
+    и конвертируются в платный заказ. Оценка: +30–80 доп. заказов/год = +$1 500–$7 500.</p>
+  </div>
+</div>
+
+<!-- ══════════ TAB 3: НАСТРОЙКИ ══════════ -->
+<div class="panel" id="t-settings">
+  <div class="sec-title">Настройки категорий</div>
+  <div class="sec-sub">Редактируйте названия, цены (включая $0), состав работ. Нажмите «Сохранить» для фиксации.</div>
+
+  <div class="btn-row">
+    <button class="btn btn-save" onclick="saveAll()">💾 Сохранить</button>
+    <button class="btn btn-reset" onclick="resetAll()">↺ Сбросить к умолчаниям</button>
+    <button class="btn btn-add" onclick="addCategory()">＋ Добавить категорию</button>
+  </div>
+
+  <div class="settings-grid" id="settings-grid"></div>
+
+  <div class="dnd-wrap">
+    <div class="dnd-title">🔀 Состав категорий — перетаскивайте работы</div>
+    <div class="dnd-sub">Теги К1–К7 — исходная категория дизайнеров. «А» — из текстов Артёма. Перетаскивание пересчитывает финансы.</div>
+    <div class="dnd-grid" id="dnd-grid"></div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 4: ОПИСАНИЯ ══════════ -->
+<div class="panel" id="t-descriptions">
+  <div class="sec-title">Сопоставление описаний</div>
+  <div class="sec-sub">Тексты Артёма (правый столбец) сопоставлены с работами наших категорий. Зелёный = подходит, жёлтый = частично, красный = не подходит или нет аналога.</div>
+
+  <div id="desc-content"></div>
+</div>
+
+<!-- ══════════ TAB 5: ИСХОДНЫЕ ДАННЫЕ ══════════ -->
+<div class="panel" id="t-source">
+  <div class="sec-title">Исходные данные: 7 категорий дизайнеров</div>
+  <div class="sec-sub">Справочник · только для чтения · основа всех расчётов</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;" id="src-grid"></div>
+</div>
+
+</div><!-- /main -->
+<script>
+// ══════════════════════════════════════════════════════
+// MASTER DATA
+// ══════════════════════════════════════════════════════
+const SRC = [
+  {id:1,name:'Кат.1',label:'Базовое улучшение',  price:30, cost:15.3,orders:418,mp:.489},
+  {id:2,name:'Кат.2',label:'Улучшение 2 фото',   price:50, cost:21.2,orders:551,mp:.576},
+  {id:3,name:'Кат.3',label:'Комбинация лайт',    price:70, cost:29.1,orders:255,mp:.585},
+  {id:4,name:'Кат.4',label:'Комбинация медиум',   price:100,cost:37.9,orders:140,mp:.621},
+  {id:5,name:'Кат.5',label:'Реставрация лайт',   price:160,cost:54.5,orders:88, mp:.659},
+  {id:6,name:'Кат.6',label:'Реставрация сложная', price:210,cost:69.2,orders:50, mp:.670},
+  {id:7,name:'Кат.7',label:'Авторский проект',    price:260,cost:85.9,orders:46, mp:.669},
+];
+const BASE_REV=108480, BASE_MGN=63933;
+
+// ALL FEATURES — each has srcK, ordersShare, artText (Артём's wording if applicable)
+const ALL_FEATS=[
+  {id:'f01',srcK:1, share:.15,text:'Стилизация под живопись (стандартная)',artText:'Стандартная стилизация под живопись'},
+  {id:'f02',srcK:1, share:.20,text:'Замена или удаление фона',artText:'Освещение и фон скорректированы при необходимости'},
+  {id:'f03',srcK:1, share:.15,text:'Улучшение резкости / чёткости лица',artText:'Чёткость и детализация улучшены'},
+  {id:'f04',srcK:1, share:.10,text:'Удаление лишних объектов на фоне',artText:null},
+  {id:'f05',srcK:1, share:.10,text:'Переодевание + мелкая правка',artText:'Небольшие правки по одежде или деталям образа'},
+  {id:'f06',srcK:1, share:.08,text:'Смена мимики / убрать очки',artText:null},
+  {id:'f07',srcK:1, share:.12,text:'ЧБ → цветное (хорошее качество)',artText:'Чёрно-белое фото переведено в цветное'},
+  {id:'f08',srcK:1, share:.10,text:'Замена/добавление объекта на фоне',artText:null},
+  {id:'f09',srcK:2, share:.30,text:'Объединение 2 фото в одну сцену',artText:'Два фото объединяются в единую сбалансированную композицию'},
+  {id:'f10',srcK:2, share:.25,text:'Простая замена части тела (рука, нога)',artText:null},
+  {id:'f11',srcK:2, share:.15,text:'ЧБ → цветное (2 фото)',artText:null},
+  {id:'f12',srcK:2, share:.15,text:'Переодевание + улучшение качества',artText:null},
+  {id:'f13',srcK:2, share:.15,text:'Замена фона (сложный вариант)',artText:null},
+  {id:'f14',srcK:3, share:.30,text:'Комбинация 3 фото без замены тела',artText:'Несколько людей объединяются в одну сцену'},
+  {id:'f15',srcK:3, share:.25,text:'Реставрация лайт + ЧБ в цвет (1 фото)',artText:'Повреждённые или выцветшие фото восстанавливаются в рамках работы'},
+  {id:'f16',srcK:3, share:.20,text:'Замена тела + переодевание + правка',artText:'Позы, одежда и фон согласовываются между собой'},
+  {id:'f17',srcK:3, share:.15,text:'Сложный фон (архитектура, текстуры)',artText:null},
+  {id:'f18',srcK:3, share:.10,text:'Реставрация медиум (1 фото)',artText:null},
+  {id:'f19',srcK:4, share:.35,text:'Комбинация 4–5 фото без замены тела',artText:'Каждое фото отдельно дорабатывается перед объединением'},
+  {id:'f20',srcK:4, share:.25,text:'Комбинация + реставрация медиум',artText:null},
+  {id:'f21',srcK:4, share:.20,text:'Замена тела (сложный ракурс) + 2 правки',artText:null},
+  {id:'f22',srcK:4, share:.20,text:'Переодевание + сложный фон + улучшение',artText:null},
+  {id:'f23',srcK:5, share:.30,text:'Полная реставрация + замена тела',artText:'Реставрация и работа с позой включены при необходимости'},
+  {id:'f24',srcK:5, share:.30,text:'Реставрация + комбинация + 2 доп. правки',artText:null},
+  {id:'f25',srcK:5, share:.25,text:'Сложная реставрация (дорисовка черт, 3+ фигуры)',artText:null},
+  {id:'f26',srcK:5, share:.15,text:'2 сложных + 5 простых (авторский микс)',artText:null},
+  {id:'f27',srcK:6, share:.40,text:'Полная реставрация + комбинация (сложная)',artText:null},
+  {id:'f28',srcK:6, share:.35,text:'3 сложных + 5 простых изменений',artText:null},
+  {id:'f29',srcK:6, share:.25,text:'Сложная замена тела + реставрация + фон',artText:null},
+  {id:'f30',srcK:7, share:.35,text:'Авторский проект 6–10+ изображений',artText:'Сложная авторская композиция из 6 и более изображений'},
+  {id:'f31',srcK:7, share:.20,text:'Смена сезона / времени года (сложная)',artText:'Фон, сезон или обстановка могут быть переосмыслены'},
+  {id:'f32',srcK:7, share:.25,text:'4+ сложных изменения + 6+ простых',artText:null},
+  {id:'f33',srcK:7, share:.20,text:'Реставрация + объединение + тело + фон',artText:null},
+  // Артём exclusive
+  {id:'fa1',srcK:'a',share:0,text:'«Не знаю» → менеджер рекомендует тариф',artText:'Мы посмотрим и лично порекомендуем подходящую категорию'},
+  {id:'fa2',srcK:'a',share:0,text:'Базовое кадрирование / выравнивание объекта',artText:'Объект выровнен, кадр приведён в порядок'},
+];
+
+// ART DESCRIPTIONS per category
+const ART_DESCS = {
+  zero: [
+    {text:'Поделитесь фото и расскажите, что у вас в голове',match:'yes'},
+    {text:'Мы лично порекомендуем нужный уровень работы',match:'yes'},
+    {text:'Никаких доплат, пока вы не подтвердите',match:'yes'},
+    {text:'Объект выровнен, кадр приведён в порядок',match:'part'},
+  ],
+  touch: [
+    {text:'Чёткость и детализация улучшены для более выразительного результата',match:'yes'},
+    {text:'Освещение и фон скорректированы при необходимости',match:'yes'},
+    {text:'Чёрно-белое фото переведено в цветное',match:'yes'},
+    {text:'Ненужные объекты или отвлекающие детали убраны',match:'yes'},
+    {text:'Небольшие правки по одежде или деталям образа',match:'yes'},
+    {text:'Старое или повреждённое фото? Восстановим в рамках этой работы',match:'part',note:'У нас — Restore отдельная категория'},
+  ],
+  fusion: [
+    {text:'Два фото объединяются в единую сбалансированную композицию',match:'yes'},
+    {text:'Позы и пропорции выстраиваются так, чтобы выглядело как один реальный момент',match:'yes'},
+    {text:'Несколько людей или референсов — в одну сцену',match:'yes'},
+    {text:'Позы, одежда и фон согласовываются между собой',match:'yes'},
+    {text:'Каждое фото отдельно дорабатывается перед объединением',match:'yes'},
+    {text:'Повреждённые или выцветшие фото восстанавливаются в рамках работы',match:'part',note:'Лёгкая реставрация входит, сложная → Restore'},
+    {text:'Если одно фото старое или повреждённое — восстановим перед объединением',match:'part',note:'Лёгкая — да, сложная → Restore'},
+  ],
+  restore: [
+    {text:'Полное восстановление повреждённых / пожелтевших фото',match:'yes'},
+    {text:'ЧБ → цветное с дорисовкой деталей лица',match:'yes'},
+    {text:'Реставрация и работа с позой включены при необходимости',match:'yes'},
+    {text:'Сложная замена частей тела, поз (сложный ракурс)',match:'yes'},
+    {text:'У Артёма нет отдельной категории для реставрации — она размыта',match:'no',note:'Главное расхождение! Артём включает реставрацию в «Одно фото $49»'},
+  ],
+  art: [
+    {text:'Сложная авторская композиция из 6 и более изображений',match:'yes'},
+    {text:'Фон, сезон или обстановка могут быть переосмыслены',match:'yes'},
+    {text:'Реставрация и работа с позой включены при необходимости',match:'yes'},
+    {text:'Лучший выбор для мемориальных, семейных или творческих работ',match:'yes'},
+  ],
+};
+
+// DEFAULT CONFIG
+const DEFAULT_CATS = [
+  {
+    id:'zero',color:'teal',name:'Посмотрим вместе',label:'Нулевой вход',
+    slogan:'«Не уверены? Пришлите фото — мы подскажем»',price:0,
+    feats:['fa1','fa2'],srcKeys:[],isZero:true
+  },
+  {
+    id:'touch',color:'blue',name:'Touch Up',label:'Улучшение фото',
+    slogan:'«Одно фото — сделай красиво»',price:50,
+    feats:['f01','f02','f03','f04','f05','f06','f07','f08'],srcKeys:[1,2]
+  },
+  {
+    id:'fusion',color:'green',name:'Reunion',label:'Объединение фото',
+    slogan:'«Собери всех вместе»',price:100,
+    feats:['f09','f10','f11','f12','f13','f14','f15','f16','f17','f18'],srcKeys:[3,4]
+  },
+  {
+    id:'restore',color:'gold',name:'Restore',label:'Реставрация',
+    slogan:'«Верни к жизни старое фото»',price:150,
+    feats:['f23','f24','f25','f26','f27','f28','f29'],srcKeys:[5,6]
+  },
+  {
+    id:'art',color:'gray',name:'Masterpiece',label:'Авторский проект',
+    slogan:'«Создай нечто совершенно новое»',price:250,
+    feats:['f30','f31','f32','f33'],srcKeys:[7]
+  },
+];
+
+let CATS, FEAT_MAP;
+const STORAGE_KEY = 'portraithy_v3';
+let _dragFid = null;
+
+function loadState(){
+  try{
+    const s=localStorage.getItem(STORAGE_KEY);
+    if(s){const d=JSON.parse(s);CATS=d.cats;FEAT_MAP=d.featMap;return;}
+  }catch(e){}
+  resetState();
+}
+function resetState(){
+  CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));
+  FEAT_MAP={};
+  CATS.forEach(c=>{ FEAT_MAP[c.id]=c.feats.slice(); });
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({cats:CATS,featMap:FEAT_MAP}));
+  showSaved();
+}
+
+// ══════════════════════════════════════════════════════
+// CALCULATIONS
+// ══════════════════════════════════════════════════════
+function calcOrders(catId){
+  if(CATS.find(c=>c.id===catId)?.isZero) return 0;
+  let t=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(s) t+=s.orders*f.share;
+  });
+  return Math.round(t);
+}
+function calcFactRev(catId){
+  let t=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(s) t+=s.orders*f.share*s.price;
+  });
+  return Math.round(t);
+}
+function computeAll(){
+  let rev=0;
+  const rows=CATS.map(c=>{
+    const orders=calcOrders(c.id);
+    const factRev=calcFactRev(c.id);
+    const matRev=c.isZero?0:orders*c.price;
+    rev+=matRev;
+    return{cat:c,orders,factRev,matRev,delta:matRev-factRev};
+  });
+  return{rev:Math.round(rev),rows};
+}
+
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
+function fmt(n){return'$'+Math.abs(Math.round(n)).toLocaleString('ru-RU').replace(/\s/g,' ');}
+
+function renderCards(){
+  const g=document.getElementById('cards-grid');
+  g.innerHTML='';
+  CATS.forEach(c=>{
+    const orders=calcOrders(c.id);
+    const pct=orders>0?(orders/1548*100).toFixed(1):'—';
+    const feats=(FEAT_MAP[c.id]||[]).map(fid=>{
+      const f=ALL_FEATS.find(x=>x.id===fid);
+      if(!f) return '';
+      const badge=f.srcK==='a'?`<span class="art-badge">А</span>`:`<span class="art-badge" style="background:rgba(96,165,250,.1);color:#93c5fd">К${f.srcK}</span>`;
+      return `<li><span class="ck">✓</span><span>${f.text}${badge}</span></li>`;
+    }).join('');
+    const priceStr=c.price===0?'$0 — бесплатно':'$'+c.price;
+    const div=document.createElement('div');
+    div.className='cat-card'; div.dataset.color=c.color;
+    div.innerHTML=`
+      <div class="card-head">
+        <div class="card-label">${c.label}</div>
+        <div class="card-name">${c.name}</div>
+        <div class="card-price">${priceStr}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-slogan">${c.slogan}</div>
+        <hr class="card-sep">
+        <ul class="feat-list">${feats||'<li><span style="color:var(--text3)">Нет работ в этой категории</span></li>'}</ul>
+        <div class="card-footer">
+          ${c.isZero?'<span style="color:var(--teal-hi)">Точка входа · без оплаты · консультация</span>'
+            :`<div>~${orders.toLocaleString()} заказов · ~${pct}% от всех</div>`}
+        </div>
+      </div>`;
+    g.appendChild(div);
+  });
+}
+
+function renderFinance(){
+  const {rev,rows}=computeAll();
+  const delta=rev-BASE_REV;
+  const pct=(delta/BASE_REV*100).toFixed(1);
+  document.getElementById('kpi-rev').textContent=fmt(rev);
+  const el=document.getElementById('kpi-delta');
+  el.textContent=(delta>=0?'+':'')+fmt(delta);
+  el.className=delta>=0?'kpi-val pos':'kpi-val neg';
+  document.getElementById('kpi-pct').textContent=(delta>=0?'+':'')+pct+'% к факту 2025';
+
+  const tb=document.getElementById('fin-body');
+  tb.innerHTML='';
+  let totOrd=0,totMat=0,totFact=0;
+  rows.forEach(r=>{
+    totOrd+=r.orders; totMat+=r.matRev; totFact+=r.factRev;
+    const tr=document.createElement('tr');
+    const colorMap={blue:'row-blue',green:'row-green',gold:'row-gold',gray:'row-gray',teal:'row-teal'};
+    tr.className=colorMap[r.cat.color]||'row-blue';
+    const d=r.matRev-r.factRev;
+    tr.innerHTML=`
+      <td><strong style="color:${colorOf(r.cat.color)}">${r.cat.name}</strong>${r.cat.isZero?' <span style="font-size:9px;color:var(--teal-hi)">(нулевой вход)</span>':''}</td>
+      <td class="mono">${r.cat.isZero?'$0':'$'+r.cat.price}</td>
+      <td class="mono">${r.cat.isZero?'—':r.orders.toLocaleString()}</td>
+      <td class="mono ${r.cat.isZero?'neu':'pos'}">${r.cat.isZero?'$0 (консультация)':fmt(r.matRev)}</td>
+      <td class="mono neu">${r.cat.isZero?'—':fmt(r.factRev)}</td>
+      <td class="mono ${d>=0&&!r.cat.isZero?'pos':r.cat.isZero?'neu':'neg'}">${r.cat.isZero?'—':(d>=0?'+':'')+fmt(d)}</td>`;
+    tb.appendChild(tr);
+  });
+  const tot=document.createElement('tr');
+  tot.className='row-total';
+  const td=totMat-totFact;
+  tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(totFact)}</td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
+  tb.appendChild(tot);
+}
+
+function colorOf(c){
+  return{blue:'var(--blue-hi)',green:'var(--green-hi)',gold:'var(--gold-hi)',gray:'var(--gray-hi)',teal:'var(--teal-hi)'}[c]||'var(--text)';
+}
+
+function renderSettings(){
+  // Price cards
+  const sg=document.getElementById('settings-grid');
+  sg.innerHTML='';
+  CATS.forEach(c=>{
+    const orders=calcOrders(c.id);
+    const d=document.createElement('div');
+    d.className='pc';
+    d.innerHTML=`
+      <div class="pc-head">
+        <div class="pc-dot ${c.color}"></div>
+        <input class="pc-name-input ${c.color}" value="${c.name}"
+          onchange="renameCat('${c.id}',this.value)" title="Нажмите для редактирования названия">
+      </div>
+      <div class="price-row">
+        <div class="price-lbl">Цена</div>
+        <div class="price-wrap">
+          <div class="price-dollar">$</div>
+          <input class="price-inp" type="number" min="0" max="9999" step="5"
+            value="${c.price}" id="pi-${c.id}"
+            onchange="setPrice('${c.id}',this.value)"
+            oninput="syncRange('${c.id}',this.value)">
+        </div>
+      </div>
+      <input class="price-range" type="range" min="0" max="500" step="5"
+        value="${c.price}" id="pr-${c.id}"
+        oninput="syncInput('${c.id}',this.value)">
+      <div class="price-range-lbl"><span>$0</span><span>$500</span></div>
+      ${c.isZero?`<div class="info-row"><span class="info-row-lbl">Тип</span><span class="info-row-val" style="color:var(--teal-hi)">Нулевой вход</span></div>`:`
+      <div class="info-row"><span class="info-row-lbl">Заказов/год</span><span class="info-row-val">${orders.toLocaleString()}</span></div>
+      <div class="info-row"><span class="info-row-lbl">Выручка</span><span class="info-row-val">${fmt(orders*c.price)}</span></div>`}
+      ${!DEFAULT_CATS.find(dc=>dc.id===c.id)?`<button class="del-btn" onclick="deleteCategory('${c.id}')">✕ Удалить категорию</button>`:''}`;
+    sg.appendChild(d);
+  });
+
+  // DnD
+  const dg=document.getElementById('dnd-grid');
+  dg.innerHTML='';
+  CATS.forEach(c=>{
+    const col=document.createElement('div');
+    col.className='dnd-col'; col.dataset.cat=c.id;
+    const orders=calcOrders(c.id);
+    col.innerHTML=`
+      <div class="dnd-col-head">
+        <div class="pc-dot ${c.color}" style="width:7px;height:7px;border-radius:50%"></div>
+        <span style="color:${colorOf(c.color)}">${c.name}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}</span>
+      </div>
+      <div class="dnd-items" id="di-${c.id}" data-cat="${c.id}"></div>`;
+    dg.appendChild(col);
+
+    const items=col.querySelector('.dnd-items');
+    (FEAT_MAP[c.id]||[]).forEach(fid=>{ items.appendChild(makeDndItem(fid)); });
+    setupDrop(items);
+  });
+}
+
+function makeDndItem(fid){
+  const f=ALL_FEATS.find(x=>x.id===fid);
+  if(!f) return document.createElement('div');
+  const el=document.createElement('div');
+  el.className='dnd-item'; el.draggable=true; el.dataset.fid=fid;
+  const k=f.srcK;
+  const badgeCls=k==='a'?'sa':`sk${k}`;
+  const approx=k==='a'?0:Math.round((SRC.find(s=>s.id===k)||{orders:0}).orders*f.share);
+  el.innerHTML=`<span class="src-badge ${badgeCls}">${k==='a'?'А':'К'+k}</span><span class="feat-text">${f.text}</span>${approx>0?`<span class="ord-chip">~${approx}</span>`:''}`;
+  el.addEventListener('dragstart',e=>{_dragFid=fid;el.classList.add('dragging');e.dataTransfer.setData('text/plain',fid);});
+  el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+  return el;
+}
+
+function setupDrop(el){
+  el.addEventListener('dragover',e=>{e.preventDefault();el.closest('.dnd-col').classList.add('drag-over');});
+  el.addEventListener('dragleave',()=>el.closest('.dnd-col').classList.remove('drag-over'));
+  el.addEventListener('drop',e=>{
+    e.preventDefault();
+    el.closest('.dnd-col').classList.remove('drag-over');
+    const tgt=el.dataset.cat;
+    const fid=e.dataTransfer.getData('text/plain');
+    if(!fid) return;
+    Object.keys(FEAT_MAP).forEach(k=>{FEAT_MAP[k]=FEAT_MAP[k].filter(x=>x!==fid);});
+    if(!(FEAT_MAP[tgt]||[]).includes(fid)){
+      if(!FEAT_MAP[tgt]) FEAT_MAP[tgt]=[];
+      FEAT_MAP[tgt].push(fid);
+    }
+    markChanged();
+    renderAll();
+  });
+}
+
+function renderDescriptions(){
+  const ct=document.getElementById('desc-content');
+  ct.innerHTML='';
+  const catMap={zero:'Посмотрим вместе',touch:'Touch Up',fusion:'Reunion',restore:'Restore',art:'Masterpiece'};
+  Object.entries(ART_DESCS).forEach(([catId,rows])=>{
+    const c=CATS.find(x=>x.id===catId);
+    if(!c) return;
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;';
+    let html=`<h3 style="font-size:13px;font-weight:700;color:${colorOf(c.color)};margin-bottom:4px;">${c.name} — ${c.label}</h3>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Сопоставление описаний Артёма с нашими работами</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;font-weight:700;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">
+      <span>Текст Артёма</span><span>Статус в нашей матрице</span>
+    </div>`;
+    rows.forEach(r=>{
+      const chip=r.match==='yes'?'<span class="match-chip m-yes">✓ подходит</span>':r.match==='part'?'<span class="match-chip m-part">≈ частично</span>':'<span class="match-chip m-no">✗ нет аналога</span>';
+      html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:11px;line-height:1.5;">
+        <div style="color:#c4b5fd">${r.text}</div>
+        <div>${chip}${r.note?`<div style="color:var(--text3);font-size:10px;margin-top:2px">${r.note}</div>`:''}</div>
+      </div>`;
+    });
+    card.innerHTML=html;
+    ct.appendChild(card);
+  });
+  ct.insertAdjacentHTML('beforeend',`
+    <div class="insight">
+      <h3>📊 Итог по описаниям</h3>
+      <p>Большинство текстов Артёма <strong>хорошо ложатся</strong> на наши категории Touch Up, Reunion и Masterpiece.
+      Главное расхождение — реставрация: Артём включает её в «Одно фото $49», мы — в отдельную категорию Restore $150.
+      <br><br>
+      Рекомендация: взять тексты Артёма как базу для клиентского описания, добавить явное указание количества фото
+      в каждой карточке, сохранить Restore как самостоятельную категорию.</p>
+    </div>`);
+}
+
+function renderSource(){
+  const g=document.getElementById('src-grid');
+  g.innerHTML='';
+  const cols=['#60a5fa','#93c5fd','#4ade80','#86efac','#fcd34d','#fde68a','#c4b5fd'];
+  SRC.forEach(s=>{
+    const col=cols[s.id-1];
+    const d=document.createElement('div');
+    d.style.cssText=`background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;`;
+    d.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${col};margin-bottom:2px">Категория ${s.id}</div>
+          <div style="font-size:13px;font-weight:700;color:${col}">${s.label}</div>
+        </div>
+        <div style="font-size:22px;font-weight:900;color:${col};font-family:'JetBrains Mono',monospace">$${s.price}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        ${[['Заказов',s.orders],['Выручка','$'+(s.orders*s.price).toLocaleString()],['Маржа',(s.mp*100).toFixed(0)+'%'],['Себест.','$'+s.cost]].map(([l,v])=>`
+        <div style="background:var(--bg3);border-radius:6px;padding:7px;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace">${v}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:1px">${l}</div>
+        </div>`).join('')}
+      </div>`;
+    g.appendChild(d);
+  });
+}
+
+function renderAll(){
+  renderCards();
+  renderFinance();
+  renderSettings();
+  renderDescriptions();
+}
+
+// ══════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════
+function sw(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('t-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+function setPrice(id,val){
+  const v=val===''?0:Math.max(0,parseInt(val)||0);
+  const c=CATS.find(x=>x.id===id);
+  if(c){ c.price=v; markChanged(); renderAll(); }
+}
+function syncRange(id,val){const r=document.getElementById('pr-'+id);if(r)r.value=val;}
+function syncInput(id,val){
+  const i=document.getElementById('pi-'+id);
+  if(i)i.value=val;
+  setPrice(id,val);
+}
+function renameCat(id,val){
+  const c=CATS.find(x=>x.id===id);
+  if(c){c.name=val;markChanged();renderCards();renderFinance();}
+}
+
+function saveAll(){
+  saveState();
+  const b=document.querySelector('.btn-save');
+  if(b){b.textContent='✓ Сохранено';setTimeout(()=>{b.textContent='💾 Сохранить';},1500);}
+}
+function resetAll(){
+  if(!confirm('Сбросить все изменения к умолчаниям?')) return;
+  resetState();
+  localStorage.removeItem(STORAGE_KEY);
+  showSaved();
+  renderAll();
+}
+
+let _newCatCount=0;
+const COLOR_CYCLE=['blue','green','gold','gray','teal'];
+function addCategory(){
+  _newCatCount++;
+  const id='custom'+_newCatCount;
+  const color=COLOR_CYCLE[_newCatCount%COLOR_CYCLE.length];
+  const newCat={
+    id,color,
+    name:'Новая категория '+_newCatCount,
+    label:'Новый тип работ',
+    slogan:'«Описание новой категории»',
+    price:0,
+    feats:[],srcKeys:[],
+    isCustom:true
+  };
+  CATS.push(newCat);
+  FEAT_MAP[id]=[];
+  markChanged();
+  renderAll();
+  // Switch to settings to show new card
+  sw('settings',document.querySelectorAll('.tab')[2]);
+}
+function deleteCategory(id){
+  if(!confirm('Удалить категорию? Работы из неё будут потеряны.')) return;
+  CATS=CATS.filter(c=>c.id!==id);
+  delete FEAT_MAP[id];
+  markChanged();
+  renderAll();
+}
+
+function markChanged(){
+  document.getElementById('changedBadge').style.display='block';
+  document.getElementById('savedBadge').style.display='none';
+}
+function showSaved(){
+  document.getElementById('changedBadge').style.display='none';
+  const s=document.getElementById('savedBadge');
+  s.style.display='block';
+  setTimeout(()=>{s.style.display='none';},2000);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+loadState();
+renderAll();
+renderSource();
+</script>
+</body>
+</html>
