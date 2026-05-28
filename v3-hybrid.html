@@ -364,10 +364,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 <!-- ══════════ TAB 4: ОПИСАНИЯ ══════════ -->
 <div class="panel" id="t-descriptions">
-  <div class="sec-title">Сопоставление описаний</div>
-  <div class="sec-sub">Тексты Артёма (правый столбец) сопоставлены с работами наших категорий. Зелёный = подходит, жёлтый = частично, красный = не подходит или нет аналога.</div>
+  <div class="sec-title">Описания категорий</div>
+  <div class="sec-sub">Два режима: сопоставление с Артёмом и итоговые описания для клиентов.</div>
 
-  <div id="desc-content"></div>
+  <!-- Sub-tabs -->
+  <div style="display:flex;gap:4px;margin-bottom:16px;border-bottom:1px solid var(--bdr);padding-bottom:0;">
+    <button id="dsub-compare" class="tab active" style="font-size:11px;padding:8px 14px;" onclick="switchDescSub('compare')">🔍 Сопоставление с Артёмом</button>
+    <button id="dsub-final"   class="tab"        style="font-size:11px;padding:8px 14px;" onclick="switchDescSub('final')">✅ Итоговые описания</button>
+  </div>
+
+  <div id="desc-compare-panel">
+    <div id="desc-content"></div>
+  </div>
+  <div id="desc-final-panel" style="display:none">
+    <div id="desc-final-content"></div>
+  </div>
 </div>
 
 <!-- ══════════ TAB 5: ИСХОДНЫЕ ДАННЫЕ ══════════ -->
@@ -526,6 +537,26 @@ function saveState(){
 // ══════════════════════════════════════════════════════
 // CALCULATIONS
 // ══════════════════════════════════════════════════════
+function calcMargin(catId){
+  // weighted avg cost & revenue from source categories
+  let totalOrders=0, totalCost=0, totalRev=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(!s) return;
+    const ord=s.orders*f.share;
+    totalOrders+=ord;
+    totalCost+=ord*s.cost;
+    totalRev+=ord*s.price;
+  });
+  if(totalOrders===0) return null;
+  const avgCost=totalCost/totalOrders;
+  return {avgCost, totalCost:Math.round(totalCost), totalRev:Math.round(totalRev),
+    marginPct:((totalRev-totalCost)/totalRev*100).toFixed(1),
+    marginDollar:Math.round((totalRev-totalCost)/totalOrders)};
+}
+
 function calcOrders(catId){
   if(CATS.find(c=>c.id===catId)?.isZero) return 0;
   let t=0;
@@ -667,8 +698,30 @@ function renderSettings(){
       <div class="price-range-lbl"><span>$0</span><span>$500</span></div>
       ${c.isZero?`<div class="info-row"><span class="info-row-lbl">Тип</span><span class="info-row-val" style="color:var(--teal-hi)">Нулевой вход</span></div>`:`
       <div class="info-row"><span class="info-row-lbl">Заказов/год</span><span class="info-row-val">${orders.toLocaleString()}</span></div>
-      <div class="info-row"><span class="info-row-lbl">Выручка</span><span class="info-row-val">${fmt(orders*c.price)}</span></div>`}
-      ${!DEFAULT_CATS.find(dc=>dc.id===c.id)?`<button class="del-btn" onclick="deleteCategory('${c.id}')">✕ Удалить категорию</button>`:''}`;
+      <div class="info-row"><span class="info-row-lbl">Выручка</span><span class="info-row-val">${fmt(orders*c.price)}</span></div>
+      ${(()=>{const m=calcMargin(c.id);if(!m)return'';return`
+      <div style="margin-top:8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;">
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Маржинальность</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
+          <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
+            <div style="font-size:14px;font-weight:800;color:var(--green-hi);font-family:'JetBrains Mono',monospace">${m.marginPct}%</div>
+            <div style="font-size:9px;color:var(--text3)">Маржа %</div>
+          </div>
+          <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
+            <div style="font-size:14px;font-weight:800;color:var(--green-hi);font-family:'JetBrains Mono',monospace">$${m.marginDollar}</div>
+            <div style="font-size:9px;color:var(--text3)">Маржа $/ед</div>
+          </div>
+          <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
+            <div style="font-size:13px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace">${fmt(m.totalRev)}</div>
+            <div style="font-size:9px;color:var(--text3)">Выручка факт</div>
+          </div>
+          <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
+            <div style="font-size:13px;font-weight:700;color:var(--neg);font-family:'JetBrains Mono',monospace">${fmt(m.totalCost)}</div>
+            <div style="font-size:9px;color:var(--text3)">Затраты факт</div>
+          </div>
+        </div>
+      </div>`;})()} `}
+      ${!c.isZero?`<button class="del-btn" onclick="deleteCategory('${c.id}')">✕ Удалить категорию</button>`:'<div style="margin-top:10px;font-size:10px;color:var(--text3);text-align:center;padding:5px">🔒 Нулевой вход нельзя удалить</div>'}`;
     sg.appendChild(d);
   });
 
@@ -683,7 +736,7 @@ function renderSettings(){
       <div class="dnd-col-head">
         <div class="pc-dot ${c.color}" style="width:7px;height:7px;border-radius:50%"></div>
         <span style="color:${colorOf(c.color)}">${c.name}</span>
-        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}${(()=>{const m=calcMargin(c.id);return m?` · <span style="color:var(--green-hi)">${m.marginPct}%</span>`:'';})()}</span>
       </div>
       <div class="dnd-items" id="di-${c.id}" data-cat="${c.id}"></div>`;
     dg.appendChild(col);
@@ -724,6 +777,88 @@ function setupDrop(el){
     }
     markChanged();
     renderAll();
+  });
+}
+
+function switchDescSub(sub){
+  document.getElementById('dsub-compare').classList.toggle('active', sub==='compare');
+  document.getElementById('dsub-final').classList.toggle('active',   sub==='final');
+  document.getElementById('desc-compare-panel').style.display = sub==='compare'?'':'none';
+  document.getElementById('desc-final-panel').style.display   = sub==='final'  ?'':'none';
+}
+
+// Данные для итоговых описаний (цвет: purple=А от Артёма, blue=V наш, yellow=✎ изменено)
+const FINAL_DESCS = {
+  zero:{name:'Посмотрим вместе',price:'$0',label:'Нулевой вход',color:'teal',items:[
+    {src:'A',text:'Поделитесь фото и расскажите, что у вас в голове'},
+    {src:'A',text:'Мы лично порекомендуем нужный уровень работы'},
+    {src:'A',text:'Никаких доплат, пока вы не подтвердите'},
+    {src:'V',text:'Менеджер консультирует бесплатно — без обязательств'},
+  ]},
+  touch:{name:'Touch Up',price:'$50',label:'Улучшение фото',color:'blue',items:[
+    {src:'A',text:'Чёткость и детализация улучшены для более выразительного результата'},
+    {src:'A',text:'Освещение и фон скорректированы при необходимости'},
+    {src:'A',text:'Чёрно-белое фото переведено в цветное'},
+    {src:'A',text:'Ненужные объекты или отвлекающие детали убраны'},
+    {src:'A',text:'Небольшие правки по одежде или деталям образа'},
+    {src:'E',text:'Одно фото. Базовое улучшение без объединения или реставрации.',note:'Уточнение: Артём не ограничивает количество фото явно'},
+  ]},
+  fusion:{name:'Reunion',price:'$100',label:'Объединение фото',color:'green',items:[
+    {src:'A',text:'Два фото объединяются в единую сбалансированную композицию'},
+    {src:'A',text:'Позы и пропорции выстраиваются так, чтобы выглядело как один реальный момент'},
+    {src:'A',text:'Несколько людей или референсов — в одну сцену'},
+    {src:'A',text:'Позы, одежда и фон согласовываются между собой'},
+    {src:'A',text:'Каждое фото отдельно дорабатывается перед объединением'},
+    {src:'E',text:'3–5 фото. Лёгкая реставрация входит — сложная выносится в Restore.',note:'Добавлено ограничение по кол-ву фото и явная граница с Restore'},
+  ]},
+  restore:{name:'Restore',price:'$150',label:'Реставрация',color:'gold',items:[
+    {src:'V',text:'Полное восстановление повреждённых и пожелтевших фото'},
+    {src:'V',text:'ЧБ → цветное с дорисовкой деталей лица'},
+    {src:'A',text:'Реставрация и работа с позой включены при необходимости'},
+    {src:'V',text:'Сложная замена частей тела и поз при необходимости'},
+    {src:'E',text:'Отдельная категория — Артём включал реставрацию в «Одно фото $49».',note:'Ключевое расхождение: мы выделяем реставрацию в самостоятельный тариф'},
+  ]},
+  art:{name:'Masterpiece',price:'$250',label:'Авторский проект',color:'gray',items:[
+    {src:'A',text:'Сложная авторская композиция из 6 и более изображений'},
+    {src:'A',text:'Фон, сезон или обстановка могут быть переосмыслены'},
+    {src:'A',text:'Реставрация и работа с позой включены при необходимости'},
+    {src:'A',text:'Лучший выбор для мемориальных, семейных или творческих работ'},
+    {src:'V',text:'6+ изображений · авторское видение · без ограничений по сложности'},
+  ]},
+};
+
+function renderDescFinal(){
+  const ct=document.getElementById('desc-final-content');
+  ct.innerHTML='';
+  Object.entries(FINAL_DESCS).forEach(([catId,d])=>{
+    const c=CATS.find(x=>x.id===catId)||{color:d.color};
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;';
+    const srcColors={A:'rgba(167,139,250,.15)',V:'rgba(96,165,250,.12)',E:'rgba(251,191,36,.12)'};
+    const srcTextColors={A:'#a78bfa',V:'#60a5fa',E:'#fbbf24'};
+    const srcLabels={A:'А — Артём',V:'V — наш',E:'✎ изменено'};
+    let rows=d.items.map(item=>`
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--bdr);">
+        <span style="flex-shrink:0;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;
+          background:${srcColors[item.src]};color:${srcTextColors[item.src]};margin-top:2px;white-space:nowrap">${srcLabels[item.src]}</span>
+        <div>
+          <div style="font-size:11.5px;line-height:1.5;color:var(--text)">${item.text}</div>
+          ${item.note?`<div style="font-size:9.5px;color:var(--text3);margin-top:2px;font-style:italic">${item.note}</div>`:''}
+        </div>
+      </div>`).join('');
+    card.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <div class="pc-dot ${d.color}" style="width:9px;height:9px;border-radius:50%"></div>
+        <h3 style="font-size:14px;font-weight:800;color:${colorOf(d.color)}">${d.name} <span style="font-family:'JetBrains Mono',monospace">${d.price}</span></h3>
+        <span style="font-size:10px;color:var(--text3)">${d.label}</span>
+      </div>
+      <div style="display:flex;gap:10px;font-size:9px;margin-bottom:10px;">
+        <span style="padding:2px 7px;border-radius:99px;background:rgba(167,139,250,.15);color:#a78bfa">А — текст Артёма</span>
+        <span style="padding:2px 7px;border-radius:99px;background:rgba(96,165,250,.12);color:#60a5fa">V — наш вариант</span>
+        <span style="padding:2px 7px;border-radius:99px;background:rgba(251,191,36,.12);color:#fbbf24">✎ — изменено с пояснением</span>
+      </div>
+      ${rows}`;
+    ct.appendChild(card);
   });
 }
 
@@ -794,6 +929,7 @@ function renderAll(){
   renderFinance();
   renderSettings();
   renderDescriptions();
+  renderDescFinal();
 }
 
 // ══════════════════════════════════════════════════════
@@ -858,7 +994,9 @@ function addCategory(){
   sw('settings',document.querySelectorAll('.tab')[2]);
 }
 function deleteCategory(id){
-  if(!confirm('Удалить категорию? Работы из неё будут потеряны.')) return;
+  const cat=CATS.find(c=>c.id===id);
+  if(cat&&cat.isZero){alert('Нулевую категорию удалять нельзя.');return;}
+  if(!confirm('Удалить категорию? Работы из неё вернутся в общий пул (не потеряются).')) return;
   CATS=CATS.filter(c=>c.id!==id);
   delete FEAT_MAP[id];
   markChanged();
