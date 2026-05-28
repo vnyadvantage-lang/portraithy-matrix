@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portraithy · Сравнение матриц</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #090e16;
+  --bg2:      #0d1320;
+  --bg3:      #111826;
+  --surf:     #141e2c;
+  --surf2:    #192436;
+  --bdr:      #1c2a3e;
+  --bdr2:     #243245;
+  --text:     #dde6f0;
+  --text2:    #7a96b0;
+  --text3:    #3d5468;
+
+  --match:    #16a34a;
+  --match-bg: #071a0d;
+  --match-hi: #22c55e;
+
+  --diff:     #b91c1c;
+  --diff-bg:  #1a0707;
+  --diff-hi:  #f87171;
+
+  --warn:     #a16207;
+  --warn-bg:  #1a1100;
+  --warn-hi:  #fbbf24;
+
+  --blue:     #1d4ed8;
+  --blue-bg:  #071428;
+  --blue-hi:  #60a5fa;
+
+  --purple:   #7c3aed;
+  --purp-bg:  #120a28;
+  --purp-hi:  #a78bfa;
+
+  --us-accent: #2563eb;
+  --art-accent:#7c3aed;
+
+  --r: 10px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── HEADER ── */
+.hdr {
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--bg2);
+  display: flex; align-items: center; gap: 14px;
+  position: sticky; top: 0; z-index: 100;
+}
+.hdr-logo { font-size: 17px; font-weight: 800; letter-spacing: -0.3px; }
+.hdr-logo span { color: var(--blue-hi); }
+.hdr-sub { font-size: 12px; color: var(--text2); }
+.hdr-badges { display: flex; gap: 8px; margin-left: auto; }
+.badge {
+  font-size: 10px; font-weight: 700; padding: 3px 10px;
+  border-radius: 99px; letter-spacing: 0.3px;
+}
+.badge-us   { background: var(--blue-bg); color: var(--blue-hi); border: 1px solid var(--blue); }
+.badge-art  { background: var(--purp-bg); color: var(--purp-hi); border: 1px solid var(--purple); }
+
+/* ── TABS ── */
+.tabs { display: flex; background: var(--bg2); border-bottom: 1px solid var(--bdr); padding: 0 28px; }
+.tab {
+  padding: 13px 18px; font-size: 13px; font-weight: 500;
+  color: var(--text2); background: none; border: none; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .2s, border-color .2s;
+  display: flex; align-items: center; gap: 6px;
+  white-space: nowrap;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--text); border-bottom-color: var(--blue-hi); }
+
+/* ── MAIN ── */
+.main { padding: 28px; max-width: 1400px; margin: 0 auto; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.sec-title { font-size: 20px; font-weight: 800; margin-bottom: 5px; letter-spacing: -0.4px; }
+.sec-sub   { font-size: 12px; color: var(--text2); margin-bottom: 22px; line-height: 1.6; }
+
+/* ── LEGEND ── */
+.legend {
+  display: flex; gap: 16px; flex-wrap: wrap;
+  background: var(--surf); border: 1px solid var(--bdr);
+  border-radius: var(--r); padding: 12px 16px;
+  margin-bottom: 20px;
+}
+.leg-item { display: flex; align-items: center; gap: 7px; font-size: 11px; color: var(--text2); }
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.leg-match  { background: var(--match-hi); }
+.leg-diff   { background: var(--diff-hi); }
+.leg-warn   { background: var(--warn-hi); }
+.leg-us     { background: var(--blue-hi); }
+.leg-art    { background: var(--purp-hi); }
+
+/* ── DUAL HEADER ── */
+.dual-header {
+  display: grid; grid-template-columns: 220px 1fr 1fr;
+  gap: 8px; margin-bottom: 8px;
+}
+.dh-label { font-size: 11px; color: var(--text3); padding: 8px 0; }
+.dh-col {
+  border-radius: 8px 8px 0 0; padding: 12px 16px;
+  display: flex; align-items: center; gap: 10px;
+}
+.dh-us  { background: var(--blue-bg); border: 1px solid var(--blue); border-bottom: none; }
+.dh-art { background: var(--purp-bg); border: 1px solid var(--purple); border-bottom: none; }
+.dh-col-icon { font-size: 16px; }
+.dh-col-name { font-size: 14px; font-weight: 800; }
+.dh-col-name.us  { color: var(--blue-hi); }
+.dh-col-name.art { color: var(--purp-hi); }
+.dh-col-sub { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+/* ── CHESS TABLE ── */
+.chess-wrap { overflow-x: auto; margin-bottom: 28px; }
+.chess {
+  width: 100%; border-collapse: separate; border-spacing: 0 5px;
+  min-width: 900px;
+}
+.chess thead th {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--text3);
+  padding: 8px 12px; text-align: left;
+  background: var(--surf);
+}
+.chess thead th:first-child { border-radius: 6px 0 0 6px; }
+.chess thead th:last-child  { border-radius: 0 6px 6px 0; }
+
+.chess tbody tr td {
+  padding: 0; vertical-align: top;
+}
+
+/* Work row */
+.work-row {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 5px;
+  margin-bottom: 4px;
+  align-items: stretch;
+}
+
+.work-name {
+  background: var(--surf);
+  border-radius: 7px;
+  padding: 10px 13px;
+  font-size: 11.5px; color: var(--text2);
+  display: flex; align-items: center; gap: 7px;
+  border-left: 3px solid transparent;
+}
+.work-name .wn-icon { font-size: 13px; flex-shrink: 0; }
+.work-name .wn-text { line-height: 1.4; }
+.work-name .src-tag {
+  font-size: 9px; font-weight: 700; font-family: 'JetBrains Mono', monospace;
+  padding: 1px 5px; border-radius: 3px; flex-shrink: 0; margin-left: auto;
+}
+
+.work-cell {
+  border-radius: 7px;
+  padding: 9px 13px;
+  font-size: 11px; line-height: 1.5;
+  display: flex; flex-direction: column; justify-content: center;
+}
+
+/* Match states */
+.cell-match {
+  background: var(--match-bg);
+  border: 1px solid rgba(34,197,94,0.25);
+}
+.cell-diff {
+  background: var(--diff-bg);
+  border: 1px solid rgba(248,113,113,0.2);
+}
+.cell-warn {
+  background: var(--warn-bg);
+  border: 1px solid rgba(251,191,36,0.2);
+}
+.cell-empty {
+  background: var(--bg3);
+  border: 1px dashed var(--bdr2);
+}
+
+.cell-cat {
+  font-weight: 700; font-size: 12px; margin-bottom: 3px;
+}
+.cell-cat.us  { color: var(--blue-hi); }
+.cell-cat.art { color: var(--purp-hi); }
+.cell-cat.match { color: var(--match-hi); }
+.cell-cat.diff  { color: var(--diff-hi); }
+.cell-price {
+  font-size: 10px; font-family: 'JetBrains Mono', monospace;
+  font-weight: 600; margin-bottom: 4px;
+}
+.cell-note { font-size: 10px; color: var(--text2); line-height: 1.4; }
+
+.match-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 99px;
+  margin-top: 4px; align-self: flex-start;
+}
+.match-badge.same { background: rgba(34,197,94,0.15); color: var(--match-hi); }
+.match-badge.diff { background: rgba(248,113,113,0.15); color: var(--diff-hi); }
+.match-badge.warn { background: rgba(251,191,36,0.15); color: var(--warn-hi); }
+.match-badge.new  { background: rgba(96,165,250,0.15); color: var(--blue-hi); }
+
+/* ── SECTION GROUPS ── */
+.group-header {
+  display: grid;
+  grid-template-columns: 220px 1fr 1fr;
+  gap: 5px;
+  margin: 16px 0 8px;
+}
+.gh-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.8px;
+  text-transform: uppercase; color: var(--text3);
+  padding: 6px 0; display: flex; align-items: center;
+}
+.gh-cat {
+  border-radius: 6px;
+  padding: 8px 13px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.gh-us  { background: rgba(37,99,235,0.12); border: 1px solid rgba(37,99,235,0.3); }
+.gh-art { background: rgba(124,58,237,0.12); border: 1px solid rgba(124,58,237,0.3); }
+.gh-name { font-size: 13px; font-weight: 800; }
+.gh-name.us  { color: var(--blue-hi); }
+.gh-name.art { color: var(--purp-hi); }
+.gh-price { font-size: 16px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+.gh-price.us  { color: var(--blue-hi); }
+.gh-price.art { color: var(--purp-hi); }
+.gh-orders { font-size: 10px; color: var(--text2); margin-top: 1px; }
+
+/* ── FINANCE TAB ── */
+.fin-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 24px; }
+.fin-kpi {
+  background: var(--surf); border: 1px solid var(--bdr);
+  border-radius: var(--r); padding: 16px 18px;
+}
+.fin-kpi-label { font-size: 11px; color: var(--text3); margin-bottom: 5px; }
+.fin-kpi-val { font-size: 24px; font-weight: 900; font-family: 'JetBrains Mono', monospace; }
+.fin-kpi-sub { font-size: 10px; color: var(--text2); margin-top: 3px; }
+
+.fin-comp-wrap { overflow-x: auto; margin-bottom: 24px; }
+.fin-comp {
+  width: 100%; border-collapse: separate; border-spacing: 0 5px;
+  min-width: 700px;
+}
+.fin-comp th {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+  text-transform: uppercase; color: var(--text3);
+  padding: 8px 12px; text-align: left;
+  background: var(--surf);
+}
+.fin-comp th:first-child { border-radius: 6px 0 0 6px; }
+.fin-comp th:last-child  { border-radius: 0 6px 6px 0; }
+.fin-comp td { padding: 10px 12px; font-size: 12px; }
+.fin-comp tr.us-row   td { background: #070f1e; }
+.fin-comp tr.art-row  td { background: #0c0818; }
+.fin-comp tr.diff-row td { background: #0d0d0d; border-top: 1px dashed var(--bdr2); }
+.fin-comp td:first-child { border-radius: 6px 0 0 6px; }
+.fin-comp td:last-child  { border-radius: 0 6px 6px 0; }
+
+.risk-block {
+  background: var(--diff-bg); border: 1px solid rgba(248,113,113,0.3);
+  border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px;
+}
+.risk-block h3 { font-size: 13px; font-weight: 700; color: var(--diff-hi); margin-bottom: 10px; }
+.risk-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: #d0a0a0; line-height: 1.6; }
+.risk-item::before { content: '⚠'; flex-shrink: 0; }
+
+.insight-block {
+  background: var(--blue-bg); border: 1px solid rgba(37,99,235,0.4);
+  border-radius: var(--r); padding: 16px 18px; margin-bottom: 16px;
+}
+.insight-block h3 { font-size: 13px; font-weight: 700; color: var(--blue-hi); margin-bottom: 10px; }
+.insight-item { display: flex; gap: 10px; margin-bottom: 8px; font-size: 12px; color: #90b8d8; line-height: 1.6; }
+.insight-item::before { content: '💡'; flex-shrink: 0; }
+
+/* ── ZERO CAT TAB ── */
+.zero-compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;
+}
+.zero-card {
+  border-radius: var(--r); padding: 18px 20px;
+}
+.zero-card.art-card { background: var(--purp-bg); border: 1px solid rgba(124,58,237,0.4); }
+.zero-card.us-card  { background: var(--blue-bg); border: 1px solid rgba(37,99,235,0.4); }
+.zero-card h3 { font-size: 14px; font-weight: 800; margin-bottom: 4px; }
+.zero-card h3.art { color: var(--purp-hi); }
+.zero-card h3.us  { color: var(--blue-hi); }
+.zero-card .zc-price {
+  font-size: 28px; font-weight: 900;
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 12px;
+}
+.zero-card .zc-feature {
+  display: flex; gap: 7px; font-size: 11.5px; color: var(--text2);
+  margin-bottom: 6px; line-height: 1.4;
+}
+.zero-card .zc-feature .ck { flex-shrink: 0; }
+.zero-card .zc-note { font-size: 11px; color: var(--text3); margin-top: 10px; font-style: italic; }
+
+.proposal-card {
+  background: var(--surf); border: 1px solid var(--match);
+  border-radius: var(--r); padding: 18px 20px; margin-bottom: 16px;
+}
+.proposal-card h3 { font-size: 14px; font-weight: 800; color: var(--match-hi); margin-bottom: 12px; }
+.proposal-feature {
+  display: flex; gap: 8px; font-size: 12px; color: var(--text2);
+  margin-bottom: 8px; line-height: 1.5;
+  background: var(--bg3); border-radius: 6px; padding: 8px 12px;
+}
+.proposal-feature .pf-icon { flex-shrink: 0; }
+.proposal-feature .pf-text strong { color: var(--text); }
+
+/* ── UTIL ── */
+.pos { color: #22c55e; font-weight: 700; }
+.neg { color: #f87171; font-weight: 700; }
+.neu { color: var(--text2); }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bdr2); border-radius: 99px; }
+
+/* Separator */
+.sep { border: none; border-top: 1px solid var(--bdr); margin: 20px 0; }
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div>
+    <div class="hdr-logo">Portraithy <span>·</span> Сравнение матриц</div>
+    <div class="hdr-sub">Наш вариант (Vladimir) vs Артём · Аналитика категорий и финансов</div>
+  </div>
+  <div class="hdr-badges">
+    <span class="badge badge-us">Наш вариант (Vladimir)</span>
+    <span class="badge badge-art">Артём</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="tab('chess',this)">🎯 Шахматка работ</button>
+  <button class="tab" onclick="tab('finance',this)">📊 Финансы</button>
+  <button class="tab" onclick="tab('zero',this)">🆓 Нулевая категория</button>
+</div>
+
+<div class="main">
+
+<!-- ════════════════════════ TAB 1: ШАХМАТКА ════════════════════════ -->
+<div class="panel active" id="p-chess">
+
+  <div class="sec-title">Сопоставление категорий и видов работ</div>
+  <div class="sec-sub">
+    Каждая строка — один вид работы. Цвет ячейки показывает совпадение категорий между двумя матрицами.<br>
+    Тег <span class="mono" style="font-size:11px;background:var(--surf);padding:1px 5px;border-radius:3px;color:var(--text2)">К1–К7</span> — исходная внутренняя категория из таблицы дизайнеров.
+  </div>
+
+  <div class="legend">
+    <div class="leg-item"><div class="leg-dot leg-match"></div> Совпадает — работа в той же ценовой зоне</div>
+    <div class="leg-item"><div class="leg-dot leg-diff"></div> Расходится — разные категории</div>
+    <div class="leg-item"><div class="leg-dot leg-warn"></div> Частичное совпадение / спорно</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--blue-hi)"></div> Наш вариант (Vladimir)</div>
+    <div class="leg-item"><div class="leg-dot" style="background:var(--purp-hi)"></div> Артём</div>
+  </div>
+
+  <!-- COL HEADERS -->
+  <div class="group-header" style="margin-top:0">
+    <div class="gh-label">Вид работы / К</div>
+    <div class="gh-cat gh-us">
+      <div>
+        <div class="gh-name us">Наш вариант</div>
+        <div class="gh-orders">Vladimir · маркетинговая логика</div>
+      </div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div>
+        <div class="gh-name art">Артём</div>
+        <div class="gh-orders">количество фото как делитель</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ГРУППА 0: НУЛЕВОЙ ВХОД ══ -->
+  <div class="group-header">
+    <div class="gh-label">Нулевой вход</div>
+    <div class="gh-cat gh-us">
+      <div><div class="gh-name us">— отсутствует —</div><div class="gh-orders">минимальная цена $50</div></div>
+      <div class="gh-price us">$50</div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div><div class="gh-name art">Базовая подготовка + Не знаю</div><div class="gh-orders">кадрирование / консультация</div></div>
+      <div class="gh-price art">$0</div>
+    </div>
+  </div>
+
+  <!-- row: кадрирование -->
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--warn)">
+      <span class="wn-icon">✂️</span>
+      <span class="wn-text">Базовая подготовка кадра (кадрирование, выравнивание)</span>
+      <span class="src-tag" style="background:#1a2535;color:var(--text3)">К1</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat diff">Touch Up $50</div>
+      <div class="cell-note">Включено в Touch Up без отдельной опции $0</div>
+      <span class="match-badge warn">⚠ входит в $50</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat match">Базовая подготовка $0</div>
+      <div class="cell-note">Выделено как бесплатная точка входа</div>
+      <span class="match-badge new">✦ нулевой вход</span>
+    </div>
+  </div>
+
+  <!-- row: не знаю -->
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--warn)">
+      <span class="wn-icon">❓</span>
+      <span class="wn-text">Консультация / «не знаю что выбрать»</span>
+      <span class="src-tag" style="background:#1a2535;color:var(--text3)">—</span>
+    </div>
+    <div class="work-cell cell-empty">
+      <div class="cell-note" style="color:var(--text3)">Не предусмотрено явно</div>
+      <span class="match-badge diff">✗ нет опции</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat match">Не знаю $0</div>
+      <div class="cell-note">Лид-магнит: менеджер рекомендует тариф</div>
+      <span class="match-badge new">✦ сильный ход</span>
+    </div>
+  </div>
+
+  <!-- ══ ГРУППА 1: УЛУЧШЕНИЕ 1 ФОТО ══ -->
+  <div class="group-header">
+    <div class="gh-label">Улучшение 1 фото</div>
+    <div class="gh-cat gh-us">
+      <div><div class="gh-name us">Touch Up</div><div class="gh-orders">969 заказов · 62.6%</div></div>
+      <div class="gh-price us">$50</div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div><div class="gh-name art">Одно фото</div><div class="gh-orders">418 заказов Кат.1 · ~27%</div></div>
+      <div class="gh-price art">$49</div>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🎨</span>
+      <span class="wn-text">Стилизация под живопись (стандарт)</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#60a5fa">К1</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Touch Up $50</div>
+      <div class="cell-price" style="color:var(--blue-hi)">$50</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Одно фото $49</div>
+      <div class="cell-price" style="color:var(--purp-hi)">$49</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🌅</span>
+      <span class="wn-text">Замена / удаление фона</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#60a5fa">К1</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Touch Up $50</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Одно фото $49</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🔍</span>
+      <span class="wn-text">ЧБ → цветное (хорошее качество)</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#60a5fa">К1</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Touch Up $50</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Одно фото $49</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🗑️</span>
+      <span class="wn-text">Удаление объектов / людей на фоне</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#60a5fa">К1</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Touch Up $50</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Одно фото $49</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">👗</span>
+      <span class="wn-text">Переодевание + мелкая правка</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#60a5fa">К1</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Touch Up $50</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Одно фото $49</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <!-- Ключевое расхождение: объединение 2 фото -->
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff)">
+      <span class="wn-icon">🔗</span>
+      <span class="wn-text">Объединение 2 фото в одну сцену</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#93c5fd">К2</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat us">Touch Up $50</div>
+      <div class="cell-note">Входит в Touch Up — без доп. оплаты</div>
+      <span class="match-badge diff">✗ расходится</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat art">Два фото $125</div>
+      <div class="cell-note">Отдельная категория. +$75 vs нас</div>
+      <span class="match-badge warn">⚠ дороже на $75</span>
+    </div>
+  </div>
+
+  <!-- Реставрация лёгкая -->
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff)">
+      <span class="wn-icon">🛠️</span>
+      <span class="wn-text">Реставрация лёгкая (старое/повреждённое 1 фото)</span>
+      <span class="src-tag" style="background:#1e3a5f;color:#93c5fd">К2</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat us">Touch Up $50</div>
+      <div class="cell-note">Включена в Touch Up — «старое фото? восстановим»</div>
+      <span class="match-badge diff">✗ расходится</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat art">Одно фото $49</div>
+      <div class="cell-note">Включена явно: «Old or damaged? We'll restore it»</div>
+      <span class="match-badge same">≈ совпадает</span>
+    </div>
+  </div>
+
+  <!-- ══ ГРУППА 2: ОБЪЕДИНЕНИЕ 3-5 ФОТО ══ -->
+  <div class="group-header">
+    <div class="gh-label">Объединение 3–5</div>
+    <div class="gh-cat gh-us">
+      <div><div class="gh-name us">Reunion</div><div class="gh-orders">~290 заказов · ~18.7%</div></div>
+      <div class="gh-price us">$100</div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div><div class="gh-name art">Три–пять фото</div><div class="gh-orders">~255 заказов Кат.3</div></div>
+      <div class="gh-price art">$195</div>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff)">
+      <span class="wn-icon">👨‍👩‍👧</span>
+      <span class="wn-text">Комбинация 3 фото без замены тела</span>
+      <span class="src-tag" style="background:#14401f;color:#4ade80">К3</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat us">Reunion $100</div>
+      <span class="match-badge diff">✗ расходится</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat art">Три–пять фото $195</div>
+      <div class="cell-note">Та же работа, но дороже на $95</div>
+      <span class="match-badge diff">✗ дороже на $95</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff)">
+      <span class="wn-icon">👨‍👩‍👧‍👦</span>
+      <span class="wn-text">Комбинация 4–5 фото без замены тела</span>
+      <span class="src-tag" style="background:#14401f;color:#86efac">К4</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat us">Reunion $100</div>
+      <span class="match-badge diff">✗ расходится</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat art">Три–пять фото $195</div>
+      <div class="cell-note">Та же логика, но +$95 к нашему тарифу</div>
+      <span class="match-badge warn">⚠ дороже на $95</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--warn)">
+      <span class="wn-icon">🔧</span>
+      <span class="wn-text">Корректировка поз, одежды, фона у каждого фото</span>
+      <span class="src-tag" style="background:#14401f;color:#4ade80">К3</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat us">Reunion $100</div>
+      <span class="match-badge warn">≈ частично</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Три–пять фото $195</div>
+      <div class="cell-note">Явно указано в описании Артёма</div>
+      <span class="match-badge same">✓ явно указано</span>
+    </div>
+  </div>
+
+  <!-- ══ КРИТИЧЕСКОЕ РАСХОЖДЕНИЕ: Реставрация ══ -->
+  <div class="group-header">
+    <div class="gh-label" style="color:var(--diff-hi)">⚠ Реставрация</div>
+    <div class="gh-cat gh-us">
+      <div><div class="gh-name us">Restore</div><div class="gh-orders">~243 заказа · ~15.7%</div></div>
+      <div class="gh-price us">$150</div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div><div class="gh-name art" style="color:#f87171">Нет отдельной категории!</div><div class="gh-orders" style="color:var(--diff-hi)">Размыта между «1 фото» и «3–5 фото»</div></div>
+      <div class="gh-price art" style="color:#f87171">?</div>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff);background:rgba(26,7,7,0.6)">
+      <span class="wn-icon">🖼️</span>
+      <span class="wn-text">Полная реставрация + ЧБ в цвет с дорисовкой черт</span>
+      <span class="src-tag" style="background:#3d2400;color:#fcd34d">К5</span>
+    </div>
+    <div class="work-cell cell-match" style="background:rgba(22,163,74,0.08)">
+      <div class="cell-cat us">Restore $150</div>
+      <div class="cell-note">Отдельная эмоциональная категория «Верни к жизни»</div>
+      <span class="match-badge same">✓ своя категория</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat diff">Одно фото $49 / Три–пять $195</div>
+      <div class="cell-note">Клиент не знает куда нажать если нужно и восстановить и объединить</div>
+      <span class="match-badge diff">✗ нет отдельной</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff);background:rgba(26,7,7,0.6)">
+      <span class="wn-icon">💔</span>
+      <span class="wn-text">Реставрация + объединение с другим фото</span>
+      <span class="src-tag" style="background:#3d2400;color:#fcd34d">К5</span>
+    </div>
+    <div class="work-cell cell-match" style="background:rgba(22,163,74,0.08)">
+      <div class="cell-cat us">Restore $150</div>
+      <div class="cell-note">Один тариф покрывает оба действия</div>
+      <span class="match-badge same">✓ решено</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat diff" style="color:#f87171">Провал логики</div>
+      <div class="cell-note">«Два фото $125» или «Три–пять $195»? Клиент застрянет</div>
+      <span class="match-badge diff">✗ клиент застрянет</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--diff);background:rgba(26,7,7,0.6)">
+      <span class="wn-icon">🔩</span>
+      <span class="wn-text">Сложная реставрация (дорисовка черт, сложный ракурс)</span>
+      <span class="src-tag" style="background:#3d2400;color:#fde68a">К6</span>
+    </div>
+    <div class="work-cell cell-match" style="background:rgba(22,163,74,0.08)">
+      <div class="cell-cat us">Restore $150</div>
+      <span class="match-badge same">✓ своя категория</span>
+    </div>
+    <div class="work-cell cell-diff">
+      <div class="cell-cat diff">Одно фото $49</div>
+      <div class="cell-note">Сложная реставрация за $49? Сильно занижено</div>
+      <span class="match-badge diff">✗ цена занижена</span>
+    </div>
+  </div>
+
+  <!-- ══ ГРУППА 4: АВТОРСКИЙ ПРОЕКТ ══ -->
+  <div class="group-header">
+    <div class="gh-label">6+ фото / арт</div>
+    <div class="gh-cat gh-us">
+      <div><div class="gh-name us">Masterpiece</div><div class="gh-orders">~46 заказов · ~3%</div></div>
+      <div class="gh-price us">$250</div>
+    </div>
+    <div class="gh-cat gh-art">
+      <div><div class="gh-name art">Шесть и более фото</div><div class="gh-orders">~46 заказов Кат.7</div></div>
+      <div class="gh-price art">$295</div>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🏛️</span>
+      <span class="wn-text">Авторский проект из 6–10+ изображений</span>
+      <span class="src-tag" style="background:#2d1b4e;color:#c4b5fd">К7</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat us">Masterpiece $250</div>
+      <span class="match-badge warn">≈ близко, $250 vs $295</span>
+    </div>
+    <div class="work-cell cell-warn">
+      <div class="cell-cat art">Шесть+ $295</div>
+      <div class="cell-note">На $45 дороже нашего — обоснованно</div>
+      <span class="match-badge warn">≈ +$45 к нашему</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🌿</span>
+      <span class="wn-text">Смена сезона / кардинальный фон</span>
+      <span class="src-tag" style="background:#2d1b4e;color:#c4b5fd">К7</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Masterpiece $250</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Шесть+ $295</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+  <div class="work-row">
+    <div class="work-name" style="border-left-color:var(--match)">
+      <span class="wn-icon">🎭</span>
+      <span class="wn-text">Реставрация + объединение + тело + фон (комплекс)</span>
+      <span class="src-tag" style="background:#2d1b4e;color:#c4b5fd">К7</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat us">Masterpiece $250</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+    <div class="work-cell cell-match">
+      <div class="cell-cat art">Шесть+ $295</div>
+      <span class="match-badge same">✓ совпадает</span>
+    </div>
+  </div>
+
+</div><!-- /chess -->
+
+<!-- ════════════════════════ TAB 2: ФИНАНСЫ ════════════════════════ -->
+<div class="panel" id="p-finance">
+
+  <div class="sec-title">Финансовый эффект: наш вариант vs Артём</div>
+  <div class="sec-sub">Расчёт при сохранении объёмов 2025 (1 548 заказов). Базовая выручка факт: $108 480</div>
+
+  <div class="fin-grid">
+    <div class="fin-kpi" style="border-color:var(--text3)">
+      <div class="fin-kpi-label">Выручка факт 2025</div>
+      <div class="fin-kpi-val neu">$108 480</div>
+      <div class="fin-kpi-sub">7 категорий · реальные цены</div>
+    </div>
+    <div class="fin-kpi" style="border-color:var(--blue);background:var(--blue-bg)">
+      <div class="fin-kpi-label">Наш вариант (Vladimir)</div>
+      <div class="fin-kpi-val" style="color:var(--blue-hi)">~$127 510</div>
+      <div class="fin-kpi-sub pos">+$19 030 · +17.5%</div>
+    </div>
+    <div class="fin-kpi" style="border-color:var(--purple);background:var(--purp-bg)">
+      <div class="fin-kpi-label">Вариант Артёма</div>
+      <div class="fin-kpi-val" style="color:var(--purp-hi)">~$136 820</div>
+      <div class="fin-kpi-sub" style="color:var(--warn-hi)">+$28 340 · +26.1% (при тех же объёмах⚠)</div>
+    </div>
+  </div>
+
+  <div class="fin-comp-wrap">
+    <table class="fin-comp">
+      <thead>
+        <tr>
+          <th>Вид работы / группа</th>
+          <th>Заказов</th>
+          <th>Наш вариант</th>
+          <th>Выручка наш</th>
+          <th>Вариант Артёма</th>
+          <th>Выручка Артём</th>
+          <th>Разница</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="us-row">
+          <td><strong style="color:var(--blue-hi)">Touch Up / Одно фото</strong><br><span style="font-size:10px;color:var(--text3)">Кат.1+2 · улучшение 1–2 фото</span></td>
+          <td class="mono">969</td>
+          <td class="mono" style="color:var(--blue-hi)">$50</td>
+          <td class="mono pos">$48 450</td>
+          <td class="mono" style="color:var(--purp-hi)">$49</td>
+          <td class="mono" style="color:var(--purp-hi)">$47 481</td>
+          <td class="mono neg">−$969</td>
+        </tr>
+        <tr class="art-row">
+          <td><strong style="color:#f87171">Объединение 2 фото</strong><br><span style="font-size:10px;color:var(--text3)">Кат.2 · ключевое расхождение!</span></td>
+          <td class="mono">551</td>
+          <td class="mono" style="color:var(--blue-hi)">$50 <span style="font-size:10px;color:var(--text3)">(в Touch Up)</span></td>
+          <td class="mono" style="color:var(--text3)">учтено выше</td>
+          <td class="mono" style="color:var(--purp-hi)">$125</td>
+          <td class="mono" style="color:var(--purp-hi)">$68 875</td>
+          <td class="mono pos">+$41 375 <span style="font-size:10px">⚠при тех же объёмах</span></td>
+        </tr>
+        <tr class="diff-row">
+          <td colspan="7" style="font-size:11px;color:var(--warn-hi);padding:6px 12px">
+            ⚠ При цене $125 вместо $50 за «2 фото» конверсия упадёт. Реалистичная потеря: 25–40% заказов этой группы = –138–220 заказов.
+            При −30%: 551 → 386 заказов, выручка $48 250 — уже меньше нашего $48 450.
+          </td>
+        </tr>
+        <tr class="us-row">
+          <td><strong style="color:var(--blue-hi)">Reunion / Три–пять фото</strong><br><span style="font-size:10px;color:var(--text3)">Кат.3+4 · объединение</span></td>
+          <td class="mono">395</td>
+          <td class="mono" style="color:var(--blue-hi)">$100</td>
+          <td class="mono pos">$39 500</td>
+          <td class="mono" style="color:var(--purp-hi)">$195</td>
+          <td class="mono" style="color:var(--purp-hi)">$77 025</td>
+          <td class="mono pos">+$37 525 <span style="font-size:10px">⚠при тех же объёмах</span></td>
+        </tr>
+        <tr class="diff-row">
+          <td colspan="7" style="font-size:11px;color:var(--warn-hi);padding:6px 12px">
+            ⚠ +95% к цене (с $100 до $195). Реалистичная потеря 20–35%: 395 → 257–316 заказов.
+            При −25%: выручка $296 × $195 = $57 720 — всё ещё лучше нашего, но риск существенный.
+          </td>
+        </tr>
+        <tr class="us-row">
+          <td><strong style="color:var(--blue-hi)">Restore</strong> / <strong style="color:#f87171">нет у Артёма</strong><br><span style="font-size:10px;color:var(--text3)">Кат.5+6 · реставрация</span></td>
+          <td class="mono">138</td>
+          <td class="mono" style="color:var(--blue-hi)">$150</td>
+          <td class="mono pos">$20 700</td>
+          <td class="mono" style="color:#f87171">$49–$195</td>
+          <td class="mono neg">~$10 200</td>
+          <td class="mono neg">−$10 500</td>
+        </tr>
+        <tr class="diff-row">
+          <td colspan="7" style="font-size:11px;color:var(--warn-hi);padding:6px 12px">
+            ⚠ Реставрация без отдельной категории размывается. Сложные случаи (К5–К6, $160–210 факт) попадут в «Одно фото $49» — потеря $100–160 с заказа.
+          </td>
+        </tr>
+        <tr class="us-row">
+          <td><strong style="color:var(--blue-hi)">Masterpiece</strong> / <strong style="color:var(--purp-hi)">Шесть+ фото</strong><br><span style="font-size:10px;color:var(--text3)">Кат.7 · авторский проект</span></td>
+          <td class="mono">46</td>
+          <td class="mono" style="color:var(--blue-hi)">$250</td>
+          <td class="mono pos">$11 500</td>
+          <td class="mono" style="color:var(--purp-hi)">$295</td>
+          <td class="mono" style="color:var(--purp-hi)">$13 570</td>
+          <td class="mono pos">+$2 070</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="risk-block">
+    <h3>⚠ Риски варианта Артёма при реалистичной конверсии</h3>
+    <div class="risk-item">Цена «2 фото» $125 вместо $50 — рост цены на 150% для самой массовой группы (551 заказов, 35.6%). При падении конверсии на 30% теряем ~165 заказов и ~$8 250 выручки.</div>
+    <div class="risk-item">Цена «3–5 фото» $195 вместо $100 — рост цены на 95%. При падении на 25% теряем ~99 заказов и ~$19 305 выручки.</div>
+    <div class="risk-item">Реставрация без отдельной категории: 138 заказов К5–К6 (реальная ср. цена $178) попадают в «Одно фото $49» → потеря ~$17 754 выручки.</div>
+    <div class="risk-item">Итого реалистичный сценарий Артёма при −25% конверсии: выручка ~$112 000 — лишь $3 500 выше факта вместо ожидаемого +$28K.</div>
+  </div>
+
+  <div class="insight-block">
+    <h3>💡 Что взять из варианта Артёма без риска для математики</h3>
+    <div class="insight-item">Нулевой вход ($0 «Не знаю») — лид-магнит, не влияет на выручку, снижает барьер входа. Добавить безопасно.</div>
+    <div class="insight-item">Цена Masterpiece $295 вместо $250 — +$45 × 46 заказов = +$2 070 без риска конверсии (премиум-сегмент нечувствителен к $45).</div>
+    <div class="insight-item">Явно указывать «сколько фото» в описании каждой категории — решает путаницу без изменения структуры.</div>
+    <div class="insight-item">Улучшить тексты описаний по шаблону Артёма — его формулировки клиентоориентированнее («Все важные люди — в одной картине»).</div>
+  </div>
+
+</div><!-- /finance -->
+
+<!-- ════════════════════════ TAB 3: НУЛЕВАЯ ════════════════════════ -->
+<div class="panel" id="p-zero">
+
+  <div class="sec-title">Нулевая категория: сравнение и предложение</div>
+  <div class="sec-sub">У Артёма — две нулевые точки входа. У нас их нет. Разбираем: нужно ли добавлять и как.</div>
+
+  <div class="zero-compare">
+    <div class="zero-card art-card">
+      <h3 class="art">Артём — нулевые точки входа</h3>
+      <div class="zc-price" style="color:var(--purp-hi)">$0</div>
+      <div class="zc-feature"><span class="ck">✓</span><span><strong>Базовая подготовка</strong> — кадрирование, выравнивание объекта, базовая компоновка. Без доработок. Фото просто «готово для художника».</span></div>
+      <div class="zc-feature"><span class="ck">✓</span><span><strong>«Не знаю что выбрать»</strong> — клиент присылает фото, менеджер смотрит и лично рекомендует тариф. Никаких доплат пока клиент не подтвердит.</span></div>
+      <div class="zc-note">Логика: снизить барьер до нуля → завести любого клиента → уже внутри продать нужный тариф.</div>
+    </div>
+    <div class="zero-card us-card">
+      <h3 class="us">Наш вариант — нулевой точки нет</h3>
+      <div class="zc-price" style="color:var(--blue-hi)">$50 min</div>
+      <div class="zc-feature"><span style="color:#f87171">✗</span><span>Минимальный тариф Touch Up $50. Клиент, которому нужно только кадрировать или который «не знает» — не имеет бесплатной опции.</span></div>
+      <div class="zc-feature"><span style="color:#f87171">✗</span><span>Нет опции консультации без оплаты. Клиент в сомнении может просто уйти.</span></div>
+      <div class="zc-feature"><span style="color:var(--warn-hi)">~</span><span>Де-факто менеджеры, видимо, консультируют бесплатно — но это нигде не оформлено как опция выбора.</span></div>
+      <div class="zc-note">Риск: клиенты с нетипичным запросом или в нерешительности уходят без конверсии.</div>
+    </div>
+  </div>
+
+  <hr class="sep">
+
+  <div class="sec-title" style="font-size:16px;margin-bottom:8px">Предложение: добавить нулевую точку входа к нашей матрице</div>
+  <div class="sec-sub">Ниже — конкретный черновик, как это встроить без изменения финансовой модели</div>
+
+  <div class="proposal-card">
+    <h3>✅ Предложение: «Посмотрим вместе» — $0</h3>
+
+    <div class="proposal-feature">
+      <span class="pf-icon">🎯</span>
+      <div class="pf-text">
+        <strong>Для кого:</strong> клиент не знает, что именно нужно, или сомневается между двумя тарифами.
+        Работает как точка входа — менеджер смотрит фото и предлагает нужный вариант.
+      </div>
+    </div>
+
+    <div class="proposal-feature">
+      <span class="pf-icon">📋</span>
+      <div class="pf-text">
+        <strong>Что входит:</strong> Пришлите фото и расскажите, что вы хотите получить.
+        Мы посмотрим и лично порекомендуем подходящую категорию. Никакой платы до вашего подтверждения.
+      </div>
+    </div>
+
+    <div class="proposal-feature">
+      <span class="pf-icon">💰</span>
+      <div class="pf-text">
+        <strong>Финансовый эффект:</strong> Нулевой прямой. Косвенный — конверсия нерешительных клиентов.
+        По данным апреля (43 заказа — минимум года), часть клиентов теряется именно на этапе выбора.
+        Если $0-вход конвертирует хотя бы 30–50 доп. заказов в год → +$1 500–$7 500 выручки.
+      </div>
+    </div>
+
+    <div class="proposal-feature">
+      <span class="pf-icon">⚙️</span>
+      <div class="pf-text">
+        <strong>Как добавить в калькулятор:</strong> Нулевая «карточка» перед Touch Up.
+        Не влияет на расчёты матрицы. Отображается первой в списке, выделяется как «Не уверены?».
+        Кнопка → форма с загрузкой фото → менеджер.
+      </div>
+    </div>
+
+    <div class="proposal-feature">
+      <span class="pf-icon">⚠️</span>
+      <div class="pf-text">
+        <strong>Риск:</strong> Часть клиентов, которые сами выбрали бы Touch Up $50, переключатся на консультацию $0.
+        Нивелируется, если нулевой вход оформить как «для сложных/нестандартных случаев», а не как альтернативу покупке.
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px">
+    <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">📊 Итог: что менять, что не менять</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:12px;line-height:1.7">
+      <div>
+        <div style="color:var(--match-hi);font-weight:700;margin-bottom:6px">✅ Взять из варианта Артёма</div>
+        <div style="color:var(--text2)">• Добавить нулевую точку «Не знаю» ($0)<br>• Поднять Masterpiece до $295<br>• Улучшить тексты описаний<br>• Явно указывать кол-во фото в карточках</div>
+      </div>
+      <div>
+        <div style="color:var(--diff-hi);font-weight:700;margin-bottom:6px">❌ Не менять из нашей логики</div>
+        <div style="color:var(--text2)">• Не переходить на деление по кол-ву фото<br>• Сохранить Restore как отдельную категорию<br>• Не поднимать «2 фото» до $125<br>• Не поднимать «3–5 фото» до $195</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /zero -->
+
+</div><!-- /main -->
+
+<script>
+function tab(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('p-' + id).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+</body>
+</html>
