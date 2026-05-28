@@ -329,7 +329,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <table class="ftable" id="fin-table">
       <thead><tr>
         <th>Категория</th><th>Цена</th><th>Заказов</th>
-        <th>Выручка матрица</th><th>Выручка факт</th><th>vs факт</th>
+        <th>Выручка матрица</th><th>Выручка факт (К1–К7)</th><th>vs факт</th>
       </tr></thead>
       <tbody id="fin-body"></tbody>
     </table>
@@ -720,8 +720,9 @@ function renderFinance(){
   });
   const tot=document.createElement('tr');
   tot.className='row-total';
-  const td=totMat-totFact;
-  tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(totFact)}</td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
+  // KPI delta = rev - BASE_REV; table ИТОГО must use same BASE_REV so numbers match
+  const td=totMat-BASE_REV;
+  tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(BASE_REV)} <span style="font-size:9px;color:var(--text3)">(факт 2025)</span></td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
   tb.appendChild(tot);
 
   // Monthly chart
