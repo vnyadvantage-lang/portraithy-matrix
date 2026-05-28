@@ -340,6 +340,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     Косвенный эффект: нерешительные клиенты получают бесплатную консультацию
     и конвертируются в платный заказ. Оценка: +30–80 доп. заказов/год = +$1 500–$7 500.</p>
   </div>
+
+  <!-- MONTHLY CHART -->
+  <div style="background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:20px;margin-bottom:20px;">
+    <div style="font-size:14px;font-weight:700;margin-bottom:16px;">📅 Выручка по месяцам: факт 2025 vs матрица</div>
+    <div id="monthly-chart" style="display:flex;flex-direction:column;gap:10px;"></div>
+    <div style="display:flex;gap:16px;margin-top:12px;font-size:10px;color:var(--text3);">
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height:5px;border-radius:99px;background:var(--text3);display:inline-block;"></span>Факт 2025</span>
+      <span style="display:flex;align-items:center;gap:5px;"><span style="width:18px;height:5px;border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#22c55e);display:inline-block;"></span>По матрице</span>
+    </div>
+  </div>
 </div>
 
 <!-- ══════════ TAB 3: НАСТРОЙКИ ══════════ -->
@@ -403,6 +413,22 @@ const SRC = [
   {id:7,name:'Кат.7',label:'Авторский проект',    price:260,cost:85.9,orders:46, mp:.669},
 ];
 const BASE_REV=108480, BASE_MGN=63933;
+
+// Помесячная разбивка заказов по 7 категориям (реальные данные 2025)
+const MONTHLY = [
+  {m:'Янв', k:[27,43,14,16,14,3,1]},
+  {m:'Фев', k:[32,33,15,10,12,7,1]},
+  {m:'Мар', k:[23,27,11,12, 5,2,4]},
+  {m:'Апр', k:[10,11, 8, 2, 5,4,3]},
+  {m:'Май', k:[32,29,19,12, 6,4,2]},
+  {m:'Июн', k:[24,35,15,12, 9,9,4]},
+  {m:'Июл', k:[43,65,19, 7, 5,6,6]},
+  {m:'Авг', k:[52,51,25,12, 7,3,2]},
+  {m:'Сен', k:[42,48,27,10, 1,2,7]},
+  {m:'Окт', k:[32,66,30,15, 6,4,5]},
+  {m:'Ноя', k:[59,89,49,22,13,4,5]},
+  {m:'Дек', k:[42,54,23,10, 5,2,6]},
+];
 
 // ALL FEATURES — each has srcK, ordersShare, artText (Артём's wording if applicable)
 const ALL_FEATS=[
@@ -537,6 +563,26 @@ function saveState(){
 // ══════════════════════════════════════════════════════
 // CALCULATIONS
 // ══════════════════════════════════════════════════════
+function calcMonthlyMatrix(){
+  return MONTHLY.map(mon=>{
+    let factRev=0, matrixRev=0;
+    // fact: sum by source categories
+    mon.k.forEach((cnt,i)=>{ factRev+=cnt*SRC[i].price; });
+    // matrix: go through each marketing category
+    CATS.filter(c=>!c.isZero).forEach(c=>{
+      let catOrders=0;
+      (FEAT_MAP[c.id]||[]).forEach(fid=>{
+        const f=ALL_FEATS.find(x=>x.id===fid);
+        if(!f||f.srcK==='a') return;
+        const si=f.srcK-1;
+        catOrders+=mon.k[si]*f.share;
+      });
+      matrixRev+=catOrders*c.price;
+    });
+    return{m:mon.m, fact:Math.round(factRev), matrix:Math.round(matrixRev)};
+  });
+}
+
 function calcMargin(catId){
   // weighted avg cost & revenue from source categories
   let totalOrders=0, totalCost=0, totalRev=0;
@@ -669,6 +715,37 @@ function renderFinance(){
   const td=totMat-totFact;
   tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(totFact)}</td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
   tb.appendChild(tot);
+
+  // Monthly chart
+  const monthly=calcMonthlyMatrix();
+  const maxVal=Math.max(...monthly.map(m=>Math.max(m.fact,m.matrix)));
+  const chart=document.getElementById('monthly-chart');
+  if(chart){
+    chart.innerHTML='';
+    monthly.forEach(m=>{
+      const factW=(m.fact/maxVal*100).toFixed(1);
+      const matW =(m.matrix/maxVal*100).toFixed(1);
+      const d=m.matrix-m.fact;
+      const row=document.createElement('div');
+      row.style.cssText='display:flex;align-items:center;gap:12px;';
+      row.innerHTML=`
+        <div style="font-size:11px;color:var(--text2);width:36px;flex-shrink:0">${m.m}</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:3px;">
+          <div style="height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;border-radius:99px;background:var(--text3);width:${factW}%;transition:width .5s ease;"></div>
+          </div>
+          <div style="height:6px;background:var(--bg3);border-radius:99px;overflow:hidden;">
+            <div style="height:100%;border-radius:99px;background:linear-gradient(90deg,#1d4ed8,#22c55e);width:${matW}%;transition:width .5s ease;"></div>
+          </div>
+          <div style="font-size:10px;display:flex;gap:10px;color:var(--text3);">
+            <span>${fmt(m.fact)}</span>
+            <span style="color:var(--blue-hi)">${fmt(m.matrix)}</span>
+            <span style="color:${d>=0?'var(--pos)':'var(--neg)'}">${d>=0?'+':''}${fmt(d)}</span>
+          </div>
+        </div>`;
+      chart.appendChild(row);
+    });
+  }
 }
 
 function colorOf(c){
