@@ -596,6 +596,13 @@ function computeAll(){
 function fmt(n){return'$'+Math.abs(Math.round(n)).toLocaleString('ru-RU').replace(/\s/g,' ');}
 
 function renderCards(){
+  // Update offer subtitle dynamically
+  const nonZero=CATS.filter(c=>!c.isZero);
+  const zeroName=(CATS.find(c=>c.isZero)||{name:'Нулевой вход'}).name;
+  const catNames=nonZero.map(c=>c.name+' $'+c.price).join(' · ');
+  const sub=document.getElementById('offer-sub');
+  if(sub) sub.textContent=`v3-hybrid · ${zeroName} (бесплатно) + ${nonZero.length} категор${nonZero.length===1?'ия':nonZero.length<5?'ии':'ий'}: ${catNames}`;
+
   const g=document.getElementById('cards-grid');
   g.innerHTML='';
   CATS.forEach(c=>{
@@ -830,13 +837,15 @@ const FINAL_DESCS = {
 function renderDescFinal(){
   const ct=document.getElementById('desc-final-content');
   ct.innerHTML='';
-  Object.entries(FINAL_DESCS).forEach(([catId,d])=>{
-    const c=CATS.find(x=>x.id===catId)||{color:d.color};
+  const srcColors={A:'rgba(167,139,250,.15)',V:'rgba(96,165,250,.12)',E:'rgba(251,191,36,.12)'};
+  const srcTextColors={A:'#a78bfa',V:'#60a5fa',E:'#fbbf24'};
+  const srcLabels={A:'А — Артём',V:'V — наш',E:'✎ изменено'};
+  // Use CATS as the source of truth for name/price/color — FINAL_DESCS only supplies items[]
+  CATS.forEach(cat=>{
+    const d=FINAL_DESCS[cat.id];
+    if(!d) return; // custom categories without descriptions — skip
     const card=document.createElement('div');
     card.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;margin-bottom:14px;';
-    const srcColors={A:'rgba(167,139,250,.15)',V:'rgba(96,165,250,.12)',E:'rgba(251,191,36,.12)'};
-    const srcTextColors={A:'#a78bfa',V:'#60a5fa',E:'#fbbf24'};
-    const srcLabels={A:'А — Артём',V:'V — наш',E:'✎ изменено'};
     let rows=d.items.map(item=>`
       <div style="display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--bdr);">
         <span style="flex-shrink:0;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;
@@ -848,16 +857,28 @@ function renderDescFinal(){
       </div>`).join('');
     card.innerHTML=`
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
-        <div class="pc-dot ${d.color}" style="width:9px;height:9px;border-radius:50%"></div>
-        <h3 style="font-size:14px;font-weight:800;color:${colorOf(d.color)}">${d.name} <span style="font-family:'JetBrains Mono',monospace">${d.price}</span></h3>
-        <span style="font-size:10px;color:var(--text3)">${d.label}</span>
+        <div class="pc-dot ${cat.color}" style="width:9px;height:9px;border-radius:50%"></div>
+        <h3 style="font-size:14px;font-weight:800;color:${colorOf(cat.color)}">${cat.name} <span style="font-family:'JetBrains Mono',monospace">${cat.price===0?'$0 — бесплатно':'$'+cat.price}</span></h3>
+        <span style="font-size:10px;color:var(--text3)">${cat.label}</span>
       </div>
-      <div style="display:flex;gap:10px;font-size:9px;margin-bottom:10px;">
+      <div style="display:flex;gap:10px;font-size:9px;margin-bottom:10px;flex-wrap:wrap;">
         <span style="padding:2px 7px;border-radius:99px;background:rgba(167,139,250,.15);color:#a78bfa">А — текст Артёма</span>
         <span style="padding:2px 7px;border-radius:99px;background:rgba(96,165,250,.12);color:#60a5fa">V — наш вариант</span>
         <span style="padding:2px 7px;border-radius:99px;background:rgba(251,191,36,.12);color:#fbbf24">✎ — изменено с пояснением</span>
       </div>
       ${rows}`;
+    ct.appendChild(card);
+  });
+  // If any CATS don't have FINAL_DESCS entry (custom / renamed default) — show placeholder
+  CATS.filter(c=>!FINAL_DESCS[c.id]).forEach(cat=>{
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;opacity:.6;';
+    card.innerHTML=`
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div class="pc-dot ${cat.color}" style="width:9px;height:9px;border-radius:50%"></div>
+        <h3 style="font-size:13px;font-weight:700;color:${colorOf(cat.color)}">${cat.name} — $${cat.price}</h3>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:8px;">Описание для этой категории ещё не добавлено</div>`;
     ct.appendChild(card);
   });
 }
@@ -889,11 +910,13 @@ function renderDescriptions(){
   ct.insertAdjacentHTML('beforeend',`
     <div class="insight">
       <h3>📊 Итог по описаниям</h3>
-      <p>Большинство текстов Артёма <strong>хорошо ложатся</strong> на наши категории Touch Up, Reunion и Masterpiece.
-      Главное расхождение — реставрация: Артём включает её в «Одно фото $49», мы — в отдельную категорию Restore $150.
+      <p>Большинство текстов Артёма <strong>хорошо ложатся</strong> на наши категории
+      ${CATS.filter(c=>!c.isZero).map(c=>`<strong style="color:${colorOf(c.color)}">${c.name}</strong>`).join(', ')}.
+      Главное расхождение — реставрация: у Артёма она включена в базовый тариф,
+      у нас — отдельная категория <strong style="color:${colorOf((CATS.find(c=>c.id==='restore')||{color:'gold'}).color)}">${(CATS.find(c=>c.id==='restore')||{name:'Restore'}).name} $${(CATS.find(c=>c.id==='restore')||{price:150}).price}</strong>.
       <br><br>
       Рекомендация: взять тексты Артёма как базу для клиентского описания, добавить явное указание количества фото
-      в каждой карточке, сохранить Restore как самостоятельную категорию.</p>
+      в каждой карточке, сохранить реставрацию как самостоятельный тариф.</p>
     </div>`);
 }
 
