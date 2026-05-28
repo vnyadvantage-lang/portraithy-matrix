@@ -583,9 +583,9 @@ function calcMonthlyMatrix(){
   });
 }
 
-function calcMargin(catId){
-  // weighted avg cost & revenue from source categories
-  let totalOrders=0, totalCost=0, totalRev=0;
+function calcMargin(catId, matrixPrice){
+  // weighted avg cost from source categories (cost side is fixed)
+  let totalOrders=0, totalCost=0, totalSrcRev=0;
   (FEAT_MAP[catId]||[]).forEach(fid=>{
     const f=ALL_FEATS.find(x=>x.id===fid);
     if(!f||f.srcK==='a') return;
@@ -594,13 +594,21 @@ function calcMargin(catId){
     const ord=s.orders*f.share;
     totalOrders+=ord;
     totalCost+=ord*s.cost;
-    totalRev+=ord*s.price;
+    totalSrcRev+=ord*s.price;
   });
   if(totalOrders===0) return null;
-  const avgCost=totalCost/totalOrders;
-  return {avgCost, totalCost:Math.round(totalCost), totalRev:Math.round(totalRev),
-    marginPct:((totalRev-totalCost)/totalRev*100).toFixed(1),
-    marginDollar:Math.round((totalRev-totalCost)/totalOrders)};
+  const avgCost=totalCost/totalOrders;  // weighted avg cost per order
+  const price=matrixPrice!=null?matrixPrice:(CATS.find(c=>c.id===catId)||{price:0}).price;
+  const matrixRev=totalOrders*price;
+  const marginFromMatrix=price>0?((price-avgCost)/price*100):0;
+  return {
+    avgCost,
+    totalCost:Math.round(totalCost),
+    totalSrcRev:Math.round(totalSrcRev),      // факт-выручка по исходным ценам
+    totalMatrixRev:Math.round(matrixRev),      // выручка по цене матрицы
+    marginPct:marginFromMatrix.toFixed(1),     // маржа % от цены матрицы
+    marginDollar:Math.round(price-avgCost),    // маржа $/ед от цены матрицы
+  };
 }
 
 function calcOrders(catId){
@@ -783,25 +791,25 @@ function renderSettings(){
       ${c.isZero?`<div class="info-row"><span class="info-row-lbl">Тип</span><span class="info-row-val" style="color:var(--teal-hi)">Нулевой вход</span></div>`:`
       <div class="info-row"><span class="info-row-lbl">Заказов/год</span><span class="info-row-val">${orders.toLocaleString()}</span></div>
       <div class="info-row"><span class="info-row-lbl">Выручка</span><span class="info-row-val">${fmt(orders*c.price)}</span></div>
-      ${(()=>{const m=calcMargin(c.id);if(!m)return'';return`
+      ${(()=>{const m=calcMargin(c.id,c.price);if(!m)return'';return`
       <div style="margin-top:8px;background:var(--bg3);border:1px solid var(--bdr);border-radius:6px;padding:8px 10px;">
-        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Маржинальность</div>
+        <div style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px">Маржинальность · по цене матрицы $${c.price}</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px;">
           <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
-            <div style="font-size:14px;font-weight:800;color:var(--green-hi);font-family:'JetBrains Mono',monospace">${m.marginPct}%</div>
+            <div style="font-size:14px;font-weight:800;color:${m.marginPct>=0?'var(--green-hi)':'var(--neg)'};font-family:'JetBrains Mono',monospace">${m.marginPct}%</div>
             <div style="font-size:9px;color:var(--text3)">Маржа %</div>
           </div>
           <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
-            <div style="font-size:14px;font-weight:800;color:var(--green-hi);font-family:'JetBrains Mono',monospace">$${m.marginDollar}</div>
+            <div style="font-size:14px;font-weight:800;color:${m.marginDollar>=0?'var(--green-hi)':'var(--neg)'};font-family:'JetBrains Mono',monospace">$${m.marginDollar}</div>
             <div style="font-size:9px;color:var(--text3)">Маржа $/ед</div>
           </div>
           <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
-            <div style="font-size:13px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace">${fmt(m.totalRev)}</div>
-            <div style="font-size:9px;color:var(--text3)">Выручка факт</div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace">${fmt(m.totalMatrixRev)}</div>
+            <div style="font-size:9px;color:var(--text3)">Выручка матрица</div>
           </div>
           <div style="background:var(--surf2);border-radius:5px;padding:5px 7px;text-align:center;">
             <div style="font-size:13px;font-weight:700;color:var(--neg);font-family:'JetBrains Mono',monospace">${fmt(m.totalCost)}</div>
-            <div style="font-size:9px;color:var(--text3)">Затраты факт</div>
+            <div style="font-size:9px;color:var(--text3)">Затраты (факт)</div>
           </div>
         </div>
       </div>`;})()} `}
@@ -820,7 +828,7 @@ function renderSettings(){
       <div class="dnd-col-head">
         <div class="pc-dot ${c.color}" style="width:7px;height:7px;border-radius:50%"></div>
         <span style="color:${colorOf(c.color)}">${c.name}</span>
-        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}${(()=>{const m=calcMargin(c.id);return m?` · <span style="color:var(--green-hi)">${m.marginPct}%</span>`:'';})()}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}${(()=>{const m=calcMargin(c.id,c.price);return m?` · <span style="color:${m.marginPct>=0?'var(--green-hi)':'var(--neg)'}">${m.marginPct}%</span>`:'';})()}</span>
       </div>
       <div class="dnd-items" id="di-${c.id}" data-cat="${c.id}"></div>`;
     dg.appendChild(col);
