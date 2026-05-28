@@ -380,9 +380,22 @@ body {
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
 ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+.version-bar{background:#060a10;border-bottom:1px solid #1c2a3e;padding:8px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.version-label{font-size:10px;color:#3d5468;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-right:4px;}
+.v-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;border:1px solid #243245;color:#7a96b0;background:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+.v-btn:hover{color:#dde6f0;border-color:#7a96b0;}
+.v-btn.current{background:#071428;color:#60a5fa;border-color:#1d4ed8;}
 </style>
 </head>
 <body>
+
+<div class="version-bar">
+  <span class="version-label">Версии:</span>
+  <span class="v-btn current">v1 — Исходный калькулятор</span>
+  <a class="v-btn" href="comparison.html">v2 — Сравнение: наш vs Артём</a>
+  <a class="v-btn" href="v3-hybrid.html">v3-hybrid — Гибрид</a>
+</div>
 
 <div class="header">
   <div class="logo">Portraithy <span>·</span> Матрица</div>
