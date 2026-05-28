@@ -6,57 +6,94 @@
 <title>Portraithy · v3-hybrid</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#090e16;--bg2:#0d1320;--bg3:#111826;--surf:#141e2c;--surf2:#192436;
-  --bdr:#1c2a3e;--bdr2:#243245;--text:#dde6f0;--text2:#7a96b0;--text3:#3d5468;
-  --blue:#1d4ed8;--blue-bg:#071428;--blue-hi:#60a5fa;
-  --green:#16a34a;--green-bg:#071a0d;--green-hi:#22c55e;
-  --gold:#a16207;--gold-bg:#1a1100;--gold-hi:#eab308;
-  --gray:#475569;--gray-bg:#111827;--gray-hi:#94a3b8;
-  --teal:#0e7490;--teal-bg:#051820;--teal-hi:#22d3ee;
-  --purp:#7c3aed;--purp-hi:#a78bfa;
-  --pos:#22c55e;--neg:#f87171;--warn:#fbbf24;--r:10px;
+:root {
+  --bg:#090e16; --bg2:#0d1320; --bg3:#111826;
+  --surf:#141e2c; --surf2:#192436;
+  --bdr:#1c2a3e; --bdr2:#243245;
+  --text:#dde6f0; --text2:#7a96b0; --text3:#3d5468;
+  --blue:#1d4ed8; --blue-bg:#071428; --blue-hi:#60a5fa;
+  --green:#16a34a; --green-bg:#071a0d; --green-hi:#22c55e;
+  --gold:#a16207; --gold-bg:#1a1100; --gold-hi:#eab308;
+  --gray:#475569; --gray-bg:#111827; --gray-hi:#94a3b8;
+  --teal:#0e7490; --teal-bg:#051820; --teal-hi:#22d3ee;
+  --pos:#22c55e; --neg:#f87171; --warn:#fbbf24;
+  --r:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased;}
-.version-bar{background:#060a10;border-bottom:1px solid var(--bdr);padding:8px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.version-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-right:4px;}
-.v-btn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;border:1px solid var(--bdr2);color:var(--text2);background:none;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+
+/* NAV BAR — версии */
+.version-bar{
+  background:#060a10; border-bottom:1px solid var(--bdr);
+  padding:8px 24px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.version-label{font-size:10px;color:var(--text3);font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-right:4px;}
+.v-btn{
+  font-size:11px;font-weight:600;padding:4px 12px;border-radius:99px;
+  border:1px solid var(--bdr2);color:var(--text2);background:none;cursor:pointer;
+  text-decoration:none;display:inline-block;transition:all .2s;
+}
 .v-btn:hover{color:var(--text);border-color:var(--text2);}
 .v-btn.current{background:var(--blue-bg);color:var(--blue-hi);border-color:var(--blue);}
-.hdr{display:flex;align-items:center;gap:14px;padding:14px 24px;border-bottom:1px solid var(--bdr);background:var(--bg2);position:sticky;top:0;z-index:100;}
-.hdr-logo{font-size:17px;font-weight:800;letter-spacing:-.3px;}
+
+/* HEADER */
+.hdr{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 24px;border-bottom:1px solid var(--bdr);
+  background:var(--bg2);position:sticky;top:0;z-index:100;
+}
+.hdr-logo{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
 .hdr-logo span{color:var(--blue-hi);}
 .hdr-sub{font-size:11px;color:var(--text2);}
 .hdr-right{margin-left:auto;display:flex;gap:8px;align-items:center;}
-.saved-badge{font-size:10px;padding:3px 10px;border-radius:99px;background:var(--green-bg);color:var(--green-hi);border:1px solid var(--green);display:none;}
-.changed-badge{font-size:10px;padding:3px 10px;border-radius:99px;background:var(--gold-bg);color:var(--warn);border:1px solid var(--gold);display:none;animation:pulse 2s infinite;}
+.saved-badge{
+  font-size:10px;padding:3px 10px;border-radius:99px;
+  background:var(--green-bg);color:var(--green-hi);border:1px solid var(--green);
+  display:none;
+}
+.changed-badge{
+  font-size:10px;padding:3px 10px;border-radius:99px;
+  background:var(--gold-bg);color:var(--warn);border:1px solid var(--gold);
+  display:none;animation:pulse 2s infinite;
+}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+/* TABS */
 .tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--bdr);padding:0 24px;overflow-x:auto;}
-.tab{padding:12px 16px;font-size:12px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:color .2s,border-color .2s;display:flex;align-items:center;gap:5px;}
-.tab:hover{color:var(--text);}.tab.active{color:var(--text);border-bottom-color:var(--blue-hi);}
-.sub-tabs{display:flex;gap:0;border-bottom:1px solid var(--bdr);margin-bottom:18px;}
-.sub-tab{padding:8px 16px;font-size:11px;font-weight:500;color:var(--text2);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s;}
-.sub-tab.active{color:var(--text);border-bottom-color:var(--purp-hi);}.sub-tab:hover{color:var(--text);}
-.sub-panel{display:none;}.sub-panel.active{display:block;}
+.tab{
+  padding:12px 16px;font-size:12px;font-weight:500;color:var(--text2);
+  background:none;border:none;cursor:pointer;
+  border-bottom:2px solid transparent;white-space:nowrap;
+  transition:color .2s,border-color .2s;display:flex;align-items:center;gap:5px;
+}
+.tab:hover{color:var(--text);}
+.tab.active{color:var(--text);border-bottom-color:var(--blue-hi);}
+
+/* MAIN */
 .main{padding:24px;max-width:1400px;margin:0 auto;}
-.panel{display:none;}.panel.active{display:block;}
+.panel{display:none;}
+.panel.active{display:block;}
 .sec-title{font-size:19px;font-weight:800;margin-bottom:4px;letter-spacing:-.4px;}
 .sec-sub{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(195px,1fr));gap:12px;margin-bottom:24px;}
+
+/* ── CARDS GRID ── */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+
 .cat-card{border-radius:var(--r);border:1.5px solid transparent;overflow:hidden;transition:transform .2s,box-shadow .2s;}
 .cat-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4);}
-.cat-card[data-color=blue]{background:var(--blue-bg);border-color:var(--blue);}
-.cat-card[data-color=green]{background:var(--green-bg);border-color:var(--green);}
-.cat-card[data-color=gold]{background:var(--gold-bg);border-color:var(--gold);}
-.cat-card[data-color=gray]{background:var(--gray-bg);border-color:var(--gray);}
-.cat-card[data-color=teal]{background:var(--teal-bg);border-color:var(--teal);}
+.cat-card[data-color="blue"]  {background:var(--blue-bg);border-color:var(--blue);}
+.cat-card[data-color="green"] {background:var(--green-bg);border-color:var(--green);}
+.cat-card[data-color="gold"]  {background:var(--gold-bg);border-color:var(--gold);}
+.cat-card[data-color="gray"]  {background:var(--gray-bg);border-color:var(--gray);}
+.cat-card[data-color="teal"]  {background:var(--teal-bg);border-color:var(--teal);}
+
 .card-head{padding:12px 14px 14px;}
-.cat-card[data-color=blue] .card-head{background:#1d4ed8;}
-.cat-card[data-color=green] .card-head{background:#15803d;}
-.cat-card[data-color=gold] .card-head{background:#854d0e;}
-.cat-card[data-color=gray] .card-head{background:#374151;}
-.cat-card[data-color=teal] .card-head{background:#0e7490;}
+.cat-card[data-color="blue"]  .card-head{background:#1d4ed8;}
+.cat-card[data-color="green"] .card-head{background:#15803d;}
+.cat-card[data-color="gold"]  .card-head{background:#854d0e;}
+.cat-card[data-color="gray"]  .card-head{background:#374151;}
+.cat-card[data-color="teal"]  .card-head{background:#0e7490;}
+
 .card-label{font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:3px;}
 .card-name{font-size:18px;font-weight:900;color:#fff;line-height:1;margin-bottom:2px;}
 .card-price{font-size:24px;font-weight:900;color:#fff;font-family:'JetBrains Mono',monospace;}
@@ -66,508 +103,785 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .feat-list{list-style:none;margin-bottom:10px;}
 .feat-list li{display:flex;gap:5px;align-items:flex-start;font-size:10.5px;color:#b0c4d8;margin-bottom:3px;line-height:1.4;}
 .feat-list li .ck{color:var(--green-hi);font-weight:700;flex-shrink:0;}
-.ab{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa;margin-left:3px;}
-.sb{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(96,165,250,.1);color:#93c5fd;margin-left:3px;}
+.art-badge{display:inline-block;font-size:8px;padding:1px 4px;border-radius:3px;background:rgba(167,139,250,.15);color:#a78bfa;margin-left:3px;}
 .card-footer{border-top:1px solid rgba(255,255,255,.07);padding-top:8px;font-size:9.5px;color:var(--text3);}
+.card-stats{font-weight:700;color:var(--text2);margin-top:1px;}
+
+/* ── FINANCE ── */
 .kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
 .kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
 .kpi-lbl{font-size:10px;color:var(--text3);margin-bottom:4px;}
 .kpi-val{font-size:22px;font-weight:900;font-family:'JetBrains Mono',monospace;}
 .kpi-sub{font-size:10px;color:var(--text2);margin-top:2px;}
+
 .ftable{width:100%;border-collapse:separate;border-spacing:0 5px;}
 .ftable th{font-size:10px;font-weight:700;color:var(--text3);padding:7px 11px;text-align:left;background:var(--surf);letter-spacing:.4px;text-transform:uppercase;}
 .ftable th:first-child{border-radius:6px 0 0 6px;}.ftable th:last-child{border-radius:0 6px 6px 0;}
 .ftable td{padding:9px 11px;font-size:12px;vertical-align:middle;}
 .ftable td:first-child{border-radius:6px 0 0 6px;}.ftable td:last-child{border-radius:0 6px 6px 0;}
-.rt td{background:#030d12;}.rb td{background:#060f1e;}.rg td{background:#040e06;}
-.rgo td{background:#0e0900;}.rgr td{background:#0b0f14;}.rtot td{background:var(--surf2);font-weight:700;}
-.pos{color:var(--pos);font-weight:600;}.neg{color:var(--neg);}.neu{color:var(--text2);}
+.row-teal   td{background:#030d12;}
+.row-blue   td{background:#060f1e;}
+.row-green  td{background:#040e06;}
+.row-gold   td{background:#0e0900;}
+.row-gray   td{background:#0b0f14;}
+.row-total  td{background:var(--surf2);font-weight:700;}
+.pos{color:var(--pos);font-weight:600;}
+.neg{color:var(--neg);}
+.neu{color:var(--text2);}
 .mono{font-family:'JetBrains Mono',monospace;}
-.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px;}
-.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;border:1px solid;transition:all .2s;}
+
+/* ── SETTINGS ── */
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:28px;}
+.pc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;}
+.pc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.pc-dot{width:9px;height:9px;border-radius:50%;}
+.pc-dot.blue{background:var(--blue-hi);}.pc-dot.green{background:var(--green-hi);}
+.pc-dot.gold{background:var(--gold-hi);}.pc-dot.gray{background:var(--gray-hi);}
+.pc-dot.teal{background:var(--teal-hi);}
+.pc-name{font-size:14px;font-weight:800;}
+.pc-name.blue{color:var(--blue-hi);}.pc-name.green{color:var(--green-hi);}
+.pc-name.gold{color:var(--gold-hi);}.pc-name.gray{color:var(--gray-hi);}
+.pc-name.teal{color:var(--teal-hi);}
+.pc-name-input{
+  background:transparent;border:none;outline:none;
+  font-size:14px;font-weight:800;width:100%;
+  font-family:'Inter',sans-serif;
+}
+.pc-name-input.blue{color:var(--blue-hi);}.pc-name-input.green{color:var(--green-hi);}
+.pc-name-input.gold{color:var(--gold-hi);}.pc-name-input.gray{color:var(--gray-hi);}
+.pc-name-input.teal{color:var(--teal-hi);}
+
+.price-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.price-lbl{font-size:11px;color:var(--text2);width:80px;}
+.price-wrap{display:flex;align-items:center;gap:6px;flex:1;}
+.price-dollar{font-size:15px;font-weight:700;color:var(--text2);}
+.price-inp{
+  width:75px;background:var(--bg3);border:1px solid var(--bdr2);
+  border-radius:6px;padding:5px 8px;
+  font-size:16px;font-weight:800;color:var(--text);
+  font-family:'JetBrains Mono',monospace;text-align:center;
+}
+.price-inp:focus{outline:none;border-color:var(--blue-hi);}
+.price-range{width:100%;accent-color:var(--blue-hi);margin-bottom:3px;}
+.price-range-lbl{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);}
+.info-row{
+  display:flex;justify-content:space-between;align-items:center;
+  background:var(--bg3);border-radius:6px;padding:6px 10px;margin-top:6px;font-size:11px;
+}
+.info-row-lbl{color:var(--text3);}
+.info-row-val{font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;}
+
+.del-btn{
+  margin-top:10px;width:100%;padding:6px;
+  background:none;border:1px dashed #3a1a1a;color:var(--neg);
+  border-radius:6px;font-size:11px;cursor:pointer;transition:background .15s;
+}
+.del-btn:hover{background:rgba(248,113,113,.08);}
+
+/* DND */
+.dnd-wrap{margin-bottom:24px;}
+.dnd-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+.dnd-sub{font-size:11px;color:var(--text2);margin-bottom:14px;}
+.dnd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
+.dnd-col{
+  background:var(--surf);border:1px solid var(--bdr);
+  border-radius:var(--r);padding:10px;min-height:160px;
+  transition:border-color .2s,background .2s;
+}
+.dnd-col.drag-over{border-color:var(--blue-hi);background:#071428;}
+.dnd-col-head{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.dnd-items{display:flex;flex-direction:column;gap:4px;min-height:80px;}
+.dnd-item{
+  background:var(--bg3);border:1px solid var(--bdr2);
+  border-radius:6px;padding:5px 8px;
+  font-size:10px;color:var(--text2);
+  cursor:grab;display:flex;align-items:flex-start;gap:5px;
+  transition:background .15s,transform .15s;user-select:none;
+}
+.dnd-item:hover{background:var(--surf2);transform:scale(1.01);}
+.dnd-item.dragging{opacity:.4;cursor:grabbing;}
+.src-badge{
+  font-size:8px;padding:1px 4px;border-radius:3px;
+  font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace;
+}
+.sk1,.sk2{background:#1e3a5f;color:#60a5fa;}
+.sk3,.sk4{background:#14401f;color:#4ade80;}
+.sk5,.sk6{background:#3d2400;color:#fcd34d;}
+.sk7{background:#2d1b4e;color:#c4b5fd;}
+.sa{background:#0a2a2a;color:#22d3ee;}
+.dnd-item .feat-text{flex:1;line-height:1.4;}
+.dnd-item .ord-chip{font-size:8px;color:var(--text3);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+
+/* ACTION BUTTONS */
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;margin-bottom:28px;}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:9px 18px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;
+  border:1px solid;transition:all .2s;
+}
 .btn-save{background:var(--green-bg);color:var(--green-hi);border-color:var(--green);}
 .btn-save:hover{background:rgba(22,163,74,.2);}
 .btn-reset{background:var(--surf);color:var(--text2);border-color:var(--bdr2);}
 .btn-reset:hover{background:var(--surf2);color:var(--text);}
 .btn-add{background:var(--blue-bg);color:var(--blue-hi);border-color:var(--blue);}
 .btn-add:hover{background:rgba(29,78,216,.2);}
-.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-bottom:28px;}
-.pc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:16px 18px;}
-.pc-head{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.pcdot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.pcdot.blue{background:var(--blue-hi);}.pcdot.green{background:var(--green-hi);}
-.pcdot.gold{background:var(--gold-hi);}.pcdot.gray{background:var(--gray-hi);}.pcdot.teal{background:var(--teal-hi);}
-.pni{background:transparent;border:none;outline:none;font-size:14px;font-weight:800;width:100%;font-family:'Inter',sans-serif;border-bottom:1px dashed var(--bdr2);padding-bottom:2px;}
-.pni:focus{border-bottom-color:var(--blue-hi);}
-.pni.blue{color:var(--blue-hi);}.pni.green{color:var(--green-hi);}.pni.gold{color:var(--gold-hi);}.pni.gray{color:var(--gray-hi);}.pni.teal{color:var(--teal-hi);}
-.pr{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-.prl{font-size:11px;color:var(--text2);width:80px;}
-.prw{display:flex;align-items:center;gap:6px;flex:1;}
-.prd{font-size:15px;font-weight:700;color:var(--text2);}
-.pri{width:75px;background:var(--bg3);border:1px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:16px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace;text-align:center;}
-.pri:focus{outline:none;border-color:var(--blue-hi);}
-.prng{width:100%;accent-color:var(--blue-hi);margin-bottom:3px;}
-.prnl{display:flex;justify-content:space-between;font-size:9px;color:var(--text3);}
-.irow{display:flex;justify-content:space-between;align-items:center;background:var(--bg3);border-radius:6px;padding:6px 10px;margin-top:5px;font-size:11px;}
-.irl{color:var(--text3);}.irv{font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;}
-.mblock{margin-top:10px;background:var(--bg3);border-radius:8px;padding:10px 12px;}
-.mttl{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--text3);margin-bottom:8px;}
-.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.mbox{background:var(--surf);border-radius:6px;padding:7px 10px;text-align:center;}
-.mbox-v{font-size:15px;font-weight:800;font-family:'JetBrains Mono',monospace;}
-.mbox-l{font-size:9px;color:var(--text3);margin-top:2px;}
-.mbar-w{margin-top:8px;}
-.mbar-l{font-size:9px;color:var(--text3);display:flex;justify-content:space-between;margin-bottom:3px;}
-.mbar-t{height:5px;background:var(--bdr);border-radius:99px;overflow:hidden;}
-.mbar-f{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--blue-hi),var(--green-hi));transition:width .4s;}
-.delbtn{margin-top:10px;width:100%;padding:6px;background:none;border:1px dashed #3a1a1a;color:var(--neg);border-radius:6px;font-size:11px;cursor:pointer;transition:background .15s;}
-.delbtn:hover{background:rgba(248,113,113,.08);}
-.dndw{margin-bottom:24px;}
-.dndt{font-size:14px;font-weight:700;margin-bottom:4px;}
-.dnds{font-size:11px;color:var(--text2);margin-bottom:14px;}
-.dndg{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;}
-.dndc{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:10px;min-height:120px;transition:border-color .2s,background .2s;}
-.dndc.drag-over{border-color:var(--blue-hi);background:#071428;}
-.dndch{font-size:11px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
-.dndi-wrap{display:flex;flex-direction:column;gap:4px;min-height:70px;}
-.dndi{background:var(--bg3);border:1px solid var(--bdr2);border-radius:6px;padding:5px 8px;font-size:10px;color:var(--text2);cursor:grab;display:flex;align-items:flex-start;gap:5px;transition:background .15s,transform .15s;user-select:none;}
-.dndi:hover{background:var(--surf2);transform:scale(1.01);}.dndi.dragging{opacity:.4;cursor:grabbing;}
-.kb{font-size:8px;padding:1px 4px;border-radius:3px;font-weight:700;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
-.sk1,.sk2{background:#1e3a5f;color:#60a5fa;}.sk3,.sk4{background:#14401f;color:#4ade80;}
-.sk5,.sk6{background:#3d2400;color:#fcd34d;}.sk7{background:#2d1b4e;color:#c4b5fd;}.ska{background:#0a2a2a;color:#22d3ee;}
-.ft{flex:1;line-height:1.4;}.oc{font-size:8px;color:var(--text3);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
-.dmb{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;}
-.drg{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:11px;line-height:1.5;}
-.drg:last-child{border-bottom:none;}
-.dart{color:#c4b5fd;}.dus{color:#90b8d8;}
-.mc{font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;margin-top:3px;display:inline-block;}
-.my{background:rgba(34,197,94,.12);color:var(--green-hi);}.mn{background:rgba(248,113,113,.12);color:var(--neg);}.mp{background:rgba(251,191,36,.12);color:var(--warn);}
-.fc{border-radius:var(--r);overflow:hidden;margin-bottom:16px;border:1.5px solid transparent;}
-.fc[data-color=teal]{border-color:var(--teal);}.fc[data-color=blue]{border-color:var(--blue);}
-.fc[data-color=green]{border-color:var(--green);}.fc[data-color=gold]{border-color:var(--gold);}.fc[data-color=gray]{border-color:var(--gray);}
-.fch{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;}
-.fc[data-color=teal] .fch{background:#0e7490;}.fc[data-color=blue] .fch{background:#1d4ed8;}
-.fc[data-color=green] .fch{background:#15803d;}.fc[data-color=gold] .fch{background:#854d0e;}.fc[data-color=gray] .fch{background:#374151;}
-.fchn{font-size:16px;font-weight:900;color:#fff;}
-.fchp{font-size:20px;font-weight:900;color:#fff;font-family:'JetBrains Mono',monospace;}
-.fcb{padding:14px 16px;}
-.ff{display:flex;gap:8px;align-items:flex-start;font-size:12px;margin-bottom:7px;padding:7px 10px;border-radius:6px;line-height:1.5;}
-.ff.fa{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.15);}
-.ff.fu{background:rgba(96,165,250,.06);border:1px solid rgba(96,165,250,.12);}
-.ff.fe{background:rgba(251,191,36,.06);border:1px solid rgba(251,191,36,.18);}
-.ff.fa .ffs{color:#a78bfa;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.ff.fu .ffs{color:#60a5fa;font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.ff.fe .ffs{color:var(--warn);font-size:9px;font-weight:700;flex-shrink:0;margin-top:2px;}
-.fft{flex:1;color:var(--text2);}
-.fleg{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--text2);margin-bottom:16px;padding:10px 14px;background:var(--surf);border-radius:8px;}
-.li{display:flex;align-items:center;gap:5px;}
-.ls{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+
+/* DESC COMPARISON TAB */
+.desc-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.desc-card{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
+.desc-card h3{font-size:13px;font-weight:700;margin-bottom:10px;}
+.desc-row{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;
+  padding:8px 0;border-bottom:1px solid var(--bdr);font-size:11px;line-height:1.5;
+}
+.desc-row:last-child{border-bottom:none;}
+.desc-row .d-us{color:#90b8d8;}
+.desc-row .d-art{color:#c4b5fd;}
+.match-chip{
+  font-size:9px;font-weight:700;padding:2px 6px;border-radius:99px;margin-top:4px;display:inline-block;
+}
+.m-yes{background:rgba(34,197,94,.12);color:var(--green-hi);}
+.m-no{background:rgba(248,113,113,.12);color:var(--neg);}
+.m-part{background:rgba(251,191,36,.12);color:var(--warn);}
+
+/* Insight */
 .insight{background:#071428;border:1px solid var(--blue);border-radius:var(--r);padding:14px 16px;margin-bottom:16px;}
 .insight h3{font-size:12px;font-weight:700;color:var(--blue-hi);margin-bottom:8px;}
 .insight p{font-size:11px;color:#90b8d8;line-height:1.7;}
-.srcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+
 ::-webkit-scrollbar{width:5px;height:5px;}
 ::-webkit-scrollbar-track{background:var(--bg);}
 ::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:99px;}
 </style>
 </head>
 <body>
+
+<!-- VERSION NAV -->
 <div class="version-bar">
   <span class="version-label">Версии:</span>
-  <a class="v-btn" href="index.html">v1 — Исходный калькулятор</a>
+  <a class="v-btn" href="index.html">v1 — Исходный калькулятор (Vladimir)</a>
   <a class="v-btn" href="comparison.html">v2 — Сравнение: наш vs Артём</a>
   <span class="v-btn current">v3-hybrid — Гибрид (текущая)</span>
 </div>
+
+<!-- HEADER -->
 <div class="hdr">
-  <div><div class="hdr-logo">Portraithy <span>·</span> v3-hybrid</div>
-  <div class="hdr-sub">5 категорий · нулевой вход · маржинальность · drag-and-drop · итоговые описания</div></div>
+  <div>
+    <div class="hdr-logo">Portraithy <span>·</span> v3-hybrid</div>
+    <div class="hdr-sub">5 категорий · нулевой вход · редактируемые цены · drag-and-drop</div>
+  </div>
   <div class="hdr-right">
     <div class="changed-badge" id="changedBadge">⚡ Есть изменения</div>
     <div class="saved-badge" id="savedBadge">✓ Сохранено</div>
   </div>
 </div>
+
+<!-- TABS -->
 <div class="tabs">
   <button class="tab active" onclick="sw('offer',this)">🎯 Предложение</button>
   <button class="tab" onclick="sw('finance',this)">📊 Финансы</button>
   <button class="tab" onclick="sw('settings',this)">⚙️ Настройки</button>
-  <button class="tab" onclick="sw('desc',this)">📝 Описания</button>
-  <button class="tab" onclick="sw('src',this)">🗂 Исходные данные</button>
+  <button class="tab" onclick="sw('descriptions',this)">📝 Описания</button>
+  <button class="tab" onclick="sw('source',this)">🗂 Исходные данные</button>
 </div>
+
 <div class="main">
+
+<!-- ══════════ TAB 1: ПРЕДЛОЖЕНИЕ ══════════ -->
 <div class="panel active" id="t-offer">
   <div class="sec-title">Предложение: категории макетов</div>
-  <div class="sec-sub">v3-hybrid · нулевой вход + 4 маркетинговые категории · теги А=Артём, К=исходная кат.</div>
+  <div class="sec-sub" id="offer-sub">v3-hybrid · нулевой вход + 4 маркетинговые категории</div>
   <div class="cards-grid" id="cards-grid"></div>
-  <div class="insight"><h3>💡 Логика v3-hybrid</h3><p>Нулевая «Посмотрим вместе» ($0) снижает барьер до нуля — менеджер рекомендует тариф. Остальные 4 категории — маркетинговая логика по <strong>типу запроса</strong>. Теги К1–К7 и А видны прямо в карточке.</p></div>
+  <div class="insight">
+    <h3>💡 Логика v3-hybrid</h3>
+    <p>
+      Нулевая категория «Посмотрим вместе» ($0) — точка входа для нерешительных клиентов.
+      Снижает барьер до нуля, менеджер лично рекомендует тариф.<br><br>
+      Остальные 4 категории — наша маркетинговая логика по <strong>типу запроса</strong>
+      (не по количеству фото). Клиент выбирает <em>что хочет сделать</em>, а не
+      <em>сколько правок</em>. Описания улучшены по текстам Артёма.
+    </p>
+  </div>
 </div>
+
+<!-- ══════════ TAB 2: ФИНАНСЫ ══════════ -->
 <div class="panel" id="t-finance">
   <div class="sec-title">Финансовый эффект · v3-hybrid</div>
   <div class="sec-sub">Нулевая категория не учитывается в выручке. Расчёт при сохранении объёмов 2025.</div>
   <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-lbl">Выручка факт 2025</div><div class="kpi-val neu">$108 480</div><div class="kpi-sub">базовая линия</div></div>
-    <div class="kpi" style="border-color:var(--blue);background:var(--blue-bg)"><div class="kpi-lbl">По v3-hybrid</div><div class="kpi-val" style="color:var(--blue-hi)" id="kpi-rev">—</div><div class="kpi-sub">при сохранении объёмов</div></div>
-    <div class="kpi" style="border-color:var(--green);background:var(--green-bg)"><div class="kpi-lbl">Прирост</div><div class="kpi-val pos" id="kpi-delta">—</div><div class="kpi-sub" id="kpi-pct">—</div></div>
+    <div class="kpi">
+      <div class="kpi-lbl">Выручка факт 2025</div>
+      <div class="kpi-val neu">$108 480</div>
+      <div class="kpi-sub">базовая линия</div>
+    </div>
+    <div class="kpi" style="border-color:var(--blue);background:var(--blue-bg)">
+      <div class="kpi-lbl">По v3-hybrid</div>
+      <div class="kpi-val" style="color:var(--blue-hi)" id="kpi-rev">—</div>
+      <div class="kpi-sub">при сохранении объёмов</div>
+    </div>
+    <div class="kpi" style="border-color:var(--green);background:var(--green-bg)">
+      <div class="kpi-lbl">Прирост</div>
+      <div class="kpi-val pos" id="kpi-delta">—</div>
+      <div class="kpi-sub" id="kpi-pct">—</div>
+    </div>
   </div>
-  <div style="overflow-x:auto;margin-bottom:20px;"><table class="ftable"><thead><tr><th>Категория</th><th>Цена</th><th>Заказов</th><th>Выручка матрица</th><th>Выручка факт</th><th>vs факт</th><th>Маржа %</th></tr></thead><tbody id="fin-body"></tbody></table></div>
-  <div class="insight"><h3>📌 Нулевая категория</h3><p>«Посмотрим вместе» ($0) не даёт прямой выручки. Косвенный эффект: +30–80 конверсий/год = +$1 500–$7 500.</p></div>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table class="ftable" id="fin-table">
+      <thead><tr>
+        <th>Категория</th><th>Цена</th><th>Заказов</th>
+        <th>Выручка матрица</th><th>Выручка факт</th><th>vs факт</th>
+      </tr></thead>
+      <tbody id="fin-body"></tbody>
+    </table>
+  </div>
+  <div class="insight">
+    <h3>📌 Нулевая категория в финансах</h3>
+    <p id="fin-insight">Категория «Посмотрим вместе» ($0) не добавляет прямой выручки.
+    Косвенный эффект: нерешительные клиенты получают бесплатную консультацию
+    и конвертируются в платный заказ. Оценка: +30–80 доп. заказов/год = +$1 500–$7 500.</p>
+  </div>
 </div>
+
+<!-- ══════════ TAB 3: НАСТРОЙКИ ══════════ -->
 <div class="panel" id="t-settings">
   <div class="sec-title">Настройки категорий</div>
-  <div class="sec-sub">Кликните на название категории для редактирования. Цена $0 сохраняется. Маржинальность пересчитывается при изменении состава или цены.</div>
+  <div class="sec-sub">Редактируйте названия, цены (включая $0), состав работ. Нажмите «Сохранить» для фиксации.</div>
+
   <div class="btn-row">
     <button class="btn btn-save" onclick="saveAll()">💾 Сохранить</button>
     <button class="btn btn-reset" onclick="resetAll()">↺ Сбросить к умолчаниям</button>
-    <button class="btn btn-add" onclick="addCat()">＋ Добавить категорию</button>
+    <button class="btn btn-add" onclick="addCategory()">＋ Добавить категорию</button>
   </div>
-  <div class="sgrid" id="sgrid"></div>
-  <div class="dndw"><div class="dndt">🔀 Состав категорий — перетаскивайте работы</div>
-  <div class="dnds">К1–К7 = источник в таблице дизайнеров · А = текст Артёма · число = примерные заказы. После переноса маржинальность в карточках обновляется.</div>
-  <div class="dndg" id="dndg"></div></div>
-</div>
-<div class="panel" id="t-desc">
-  <div class="sec-title">Описания категорий</div>
-  <div class="sec-sub">Сопоставление с текстами Артёма и итоговые описания для клиента.</div>
-  <div class="sub-tabs">
-    <button class="sub-tab active" onclick="swS('match',this)">🔍 Сопоставление с Артёмом</button>
-    <button class="sub-tab" onclick="swS('final',this)">✍️ Итоговые описания</button>
+
+  <div class="settings-grid" id="settings-grid"></div>
+
+  <div class="dnd-wrap">
+    <div class="dnd-title">🔀 Состав категорий — перетаскивайте работы</div>
+    <div class="dnd-sub">Теги К1–К7 — исходная категория дизайнеров. «А» — из текстов Артёма. Перетаскивание пересчитывает финансы.</div>
+    <div class="dnd-grid" id="dnd-grid"></div>
   </div>
-  <div class="sub-panel active" id="sp-match"></div>
-  <div class="sub-panel" id="sp-final"></div>
 </div>
-<div class="panel" id="t-src">
-  <div class="sec-title">Исходные данные: 7 категорий</div>
-  <div class="sec-sub">Справочник · только для чтения</div>
-  <div class="srcg" id="srcg"></div>
+
+<!-- ══════════ TAB 4: ОПИСАНИЯ ══════════ -->
+<div class="panel" id="t-descriptions">
+  <div class="sec-title">Сопоставление описаний</div>
+  <div class="sec-sub">Тексты Артёма (правый столбец) сопоставлены с работами наших категорий. Зелёный = подходит, жёлтый = частично, красный = не подходит или нет аналога.</div>
+
+  <div id="desc-content"></div>
 </div>
+
+<!-- ══════════ TAB 5: ИСХОДНЫЕ ДАННЫЕ ══════════ -->
+<div class="panel" id="t-source">
+  <div class="sec-title">Исходные данные: 7 категорий дизайнеров</div>
+  <div class="sec-sub">Справочник · только для чтения · основа всех расчётов</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;" id="src-grid"></div>
 </div>
+
+</div><!-- /main -->
 <script>
-const SRC=[
-  {id:1,lbl:'Базовое улучшение', p:30, c:15.3,o:418,mp:.489},
-  {id:2,lbl:'Улучшение 2 фото',  p:50, c:21.2,o:551,mp:.576},
-  {id:3,lbl:'Комбинация лайт',   p:70, c:29.1,o:255,mp:.585},
-  {id:4,lbl:'Комбинация медиум',  p:100,c:37.9,o:140,mp:.621},
-  {id:5,lbl:'Реставрация лайт',  p:160,c:54.5,o:88, mp:.659},
-  {id:6,lbl:'Реставрация слож.',  p:210,c:69.2,o:50, mp:.670},
-  {id:7,lbl:'Авторский проект',   p:260,c:85.9,o:46, mp:.669},
+// ══════════════════════════════════════════════════════
+// MASTER DATA
+// ══════════════════════════════════════════════════════
+const SRC = [
+  {id:1,name:'Кат.1',label:'Базовое улучшение',  price:30, cost:15.3,orders:418,mp:.489},
+  {id:2,name:'Кат.2',label:'Улучшение 2 фото',   price:50, cost:21.2,orders:551,mp:.576},
+  {id:3,name:'Кат.3',label:'Комбинация лайт',    price:70, cost:29.1,orders:255,mp:.585},
+  {id:4,name:'Кат.4',label:'Комбинация медиум',   price:100,cost:37.9,orders:140,mp:.621},
+  {id:5,name:'Кат.5',label:'Реставрация лайт',   price:160,cost:54.5,orders:88, mp:.659},
+  {id:6,name:'Кат.6',label:'Реставрация сложная', price:210,cost:69.2,orders:50, mp:.670},
+  {id:7,name:'Кат.7',label:'Авторский проект',    price:260,cost:85.9,orders:46, mp:.669},
 ];
-const BR=108480;
+const BASE_REV=108480, BASE_MGN=63933;
 
-const AF=[
-  {id:'f01',k:1,s:.15,t:'Стилизация под живопись (стандартная)'},
-  {id:'f02',k:1,s:.20,t:'Замена или удаление фона'},
-  {id:'f03',k:1,s:.15,t:'Улучшение резкости / чёткости лица'},
-  {id:'f04',k:1,s:.10,t:'Удаление лишних объектов на фоне'},
-  {id:'f05',k:1,s:.10,t:'Переодевание + мелкая правка'},
-  {id:'f06',k:1,s:.08,t:'Смена мимики / убрать очки'},
-  {id:'f07',k:1,s:.12,t:'ЧБ → цветное (хорошее качество)'},
-  {id:'f08',k:1,s:.10,t:'Замена / добавление объекта на фоне'},
-  {id:'f09',k:2,s:.30,t:'Объединение 2 фото в одну сцену'},
-  {id:'f10',k:2,s:.25,t:'Простая замена части тела (рука, нога)'},
-  {id:'f11',k:2,s:.15,t:'ЧБ → цветное (2 фото)'},
-  {id:'f12',k:2,s:.15,t:'Переодевание + улучшение качества'},
-  {id:'f13',k:2,s:.15,t:'Замена фона (сложный вариант)'},
-  {id:'f14',k:3,s:.30,t:'Комбинация 3 фото без замены тела'},
-  {id:'f15',k:3,s:.25,t:'Реставрация лайт + ЧБ в цвет (1 фото)'},
-  {id:'f16',k:3,s:.20,t:'Замена тела + переодевание + правка'},
-  {id:'f17',k:3,s:.15,t:'Сложный фон (архитектура, текстуры)'},
-  {id:'f18',k:3,s:.10,t:'Реставрация медиум (1 фото)'},
-  {id:'f19',k:4,s:.35,t:'Комбинация 4–5 фото без замены тела'},
-  {id:'f20',k:4,s:.25,t:'Комбинация + реставрация медиум'},
-  {id:'f21',k:4,s:.20,t:'Замена тела (сложный ракурс) + 2 правки'},
-  {id:'f22',k:4,s:.20,t:'Переодевание + сложный фон + улучшение'},
-  {id:'f23',k:5,s:.30,t:'Полная реставрация + замена тела'},
-  {id:'f24',k:5,s:.30,t:'Реставрация + комбинация + 2 доп. правки'},
-  {id:'f25',k:5,s:.25,t:'Сложная реставрация (дорисовка черт)'},
-  {id:'f26',k:5,s:.15,t:'2 сложных + 5 простых изменений'},
-  {id:'f27',k:6,s:.40,t:'Полная реставрация + комбинация (сложная)'},
-  {id:'f28',k:6,s:.35,t:'3 сложных + 5 простых изменений'},
-  {id:'f29',k:6,s:.25,t:'Сложная замена тела + реставрация + фон'},
-  {id:'f30',k:7,s:.35,t:'Авторский проект 6–10+ изображений'},
-  {id:'f31',k:7,s:.20,t:'Смена сезона / времени года (сложная)'},
-  {id:'f32',k:7,s:.25,t:'4+ сложных изменения + 6+ простых'},
-  {id:'f33',k:7,s:.20,t:'Реставрация + объединение + тело + фон'},
-  {id:'fa1',k:'a',s:0,t:'«Не знаю» → менеджер рекомендует тариф'},
-  {id:'fa2',k:'a',s:0,t:'Базовое кадрирование / выравнивание объекта'},
+// ALL FEATURES — each has srcK, ordersShare, artText (Артём's wording if applicable)
+const ALL_FEATS=[
+  {id:'f01',srcK:1, share:.15,text:'Стилизация под живопись (стандартная)',artText:'Стандартная стилизация под живопись'},
+  {id:'f02',srcK:1, share:.20,text:'Замена или удаление фона',artText:'Освещение и фон скорректированы при необходимости'},
+  {id:'f03',srcK:1, share:.15,text:'Улучшение резкости / чёткости лица',artText:'Чёткость и детализация улучшены'},
+  {id:'f04',srcK:1, share:.10,text:'Удаление лишних объектов на фоне',artText:null},
+  {id:'f05',srcK:1, share:.10,text:'Переодевание + мелкая правка',artText:'Небольшие правки по одежде или деталям образа'},
+  {id:'f06',srcK:1, share:.08,text:'Смена мимики / убрать очки',artText:null},
+  {id:'f07',srcK:1, share:.12,text:'ЧБ → цветное (хорошее качество)',artText:'Чёрно-белое фото переведено в цветное'},
+  {id:'f08',srcK:1, share:.10,text:'Замена/добавление объекта на фоне',artText:null},
+  {id:'f09',srcK:2, share:.30,text:'Объединение 2 фото в одну сцену',artText:'Два фото объединяются в единую сбалансированную композицию'},
+  {id:'f10',srcK:2, share:.25,text:'Простая замена части тела (рука, нога)',artText:null},
+  {id:'f11',srcK:2, share:.15,text:'ЧБ → цветное (2 фото)',artText:null},
+  {id:'f12',srcK:2, share:.15,text:'Переодевание + улучшение качества',artText:null},
+  {id:'f13',srcK:2, share:.15,text:'Замена фона (сложный вариант)',artText:null},
+  {id:'f14',srcK:3, share:.30,text:'Комбинация 3 фото без замены тела',artText:'Несколько людей объединяются в одну сцену'},
+  {id:'f15',srcK:3, share:.25,text:'Реставрация лайт + ЧБ в цвет (1 фото)',artText:'Повреждённые или выцветшие фото восстанавливаются в рамках работы'},
+  {id:'f16',srcK:3, share:.20,text:'Замена тела + переодевание + правка',artText:'Позы, одежда и фон согласовываются между собой'},
+  {id:'f17',srcK:3, share:.15,text:'Сложный фон (архитектура, текстуры)',artText:null},
+  {id:'f18',srcK:3, share:.10,text:'Реставрация медиум (1 фото)',artText:null},
+  {id:'f19',srcK:4, share:.35,text:'Комбинация 4–5 фото без замены тела',artText:'Каждое фото отдельно дорабатывается перед объединением'},
+  {id:'f20',srcK:4, share:.25,text:'Комбинация + реставрация медиум',artText:null},
+  {id:'f21',srcK:4, share:.20,text:'Замена тела (сложный ракурс) + 2 правки',artText:null},
+  {id:'f22',srcK:4, share:.20,text:'Переодевание + сложный фон + улучшение',artText:null},
+  {id:'f23',srcK:5, share:.30,text:'Полная реставрация + замена тела',artText:'Реставрация и работа с позой включены при необходимости'},
+  {id:'f24',srcK:5, share:.30,text:'Реставрация + комбинация + 2 доп. правки',artText:null},
+  {id:'f25',srcK:5, share:.25,text:'Сложная реставрация (дорисовка черт, 3+ фигуры)',artText:null},
+  {id:'f26',srcK:5, share:.15,text:'2 сложных + 5 простых (авторский микс)',artText:null},
+  {id:'f27',srcK:6, share:.40,text:'Полная реставрация + комбинация (сложная)',artText:null},
+  {id:'f28',srcK:6, share:.35,text:'3 сложных + 5 простых изменений',artText:null},
+  {id:'f29',srcK:6, share:.25,text:'Сложная замена тела + реставрация + фон',artText:null},
+  {id:'f30',srcK:7, share:.35,text:'Авторский проект 6–10+ изображений',artText:'Сложная авторская композиция из 6 и более изображений'},
+  {id:'f31',srcK:7, share:.20,text:'Смена сезона / времени года (сложная)',artText:'Фон, сезон или обстановка могут быть переосмыслены'},
+  {id:'f32',srcK:7, share:.25,text:'4+ сложных изменения + 6+ простых',artText:null},
+  {id:'f33',srcK:7, share:.20,text:'Реставрация + объединение + тело + фон',artText:null},
+  // Артём exclusive
+  {id:'fa1',srcK:'a',share:0,text:'«Не знаю» → менеджер рекомендует тариф',artText:'Мы посмотрим и лично порекомендуем подходящую категорию'},
+  {id:'fa2',srcK:'a',share:0,text:'Базовое кадрирование / выравнивание объекта',artText:'Объект выровнен, кадр приведён в порядок'},
 ];
 
-const DD={
-  zero:{rows:[
-    {a:'Поделитесь фото и расскажите, что хотите',m:'yes',u:'Клиент присылает фото — менеджер отвечает лично'},
-    {a:'Мы лично порекомендуем нужный уровень',m:'yes',u:'Менеджер рекомендует подходящую категорию'},
-    {a:'Никаких доплат, пока вы не подтвердите',m:'yes',u:'Оплата только после подтверждения'},
-    {a:'Объект выровнен, кадр приведён в порядок',m:'part',u:'Базовое кадрирование — как бонус',n:'У нас это не отдельная услуга, а бонус'},
-  ],feats:[
-    {t:'Поделитесь фото и расскажите, что хотите получить',tp:'a'},
-    {t:'Мы лично посмотрим и порекомендуем подходящий вариант',tp:'a'},
-    {t:'Никакой оплаты, пока вы не подтвердите выбор',tp:'a'},
-    {t:'Базовое выравнивание кадра включено бесплатно',tp:'e',n:'У Артёма — отдельная услуга, мы делаем бонусом'},
-  ]},
-  touch:{rows:[
-    {a:'Чёткость и детализация улучшены',m:'yes',u:'Улучшение резкости / чёткости лица'},
-    {a:'Освещение и фон скорректированы',m:'yes',u:'Замена или удаление фона'},
-    {a:'ЧБ фото переведено в цветное',m:'yes',u:'ЧБ → цветное (хорошее качество)'},
-    {a:'Ненужные объекты убраны',m:'yes',u:'Удаление лишних объектов на фоне'},
-    {a:'Небольшие правки по одежде',m:'yes',u:'Переодевание + мелкая правка'},
-    {a:'Старое фото? Восстановим в рамках этой работы',m:'part',u:'→ Это категория Restore $150',n:'У Артёма реставрация в $49, у нас — Restore отдельно'},
-  ],feats:[
-    {t:'Чёткость и детализация улучшены — картина будет выразительнее',tp:'a'},
-    {t:'Освещение и фон скорректированы при необходимости',tp:'a'},
-    {t:'Чёрно-белое фото переведено в цветное',tp:'a'},
-    {t:'Ненужные объекты и лишние детали убраны',tp:'a'},
-    {t:'Небольшие правки по одежде или деталям образа',tp:'a'},
-    {t:'Стилизация под живопись, смена мимики, замена объектов на фоне',tp:'u'},
-    {t:'⚠ Реставрация повреждённых фото → отдельная категория Restore',tp:'e',n:'Артём включал в $49. Мы выносим в Restore $150 — честнее для клиента'},
-  ]},
-  fusion:{rows:[
-    {a:'Два фото объединяются в единую сцену',m:'yes',u:'Объединение 2–5 фото'},
-    {a:'Позы выстраиваются как один реальный момент',m:'yes',u:'Корректировка поз и пропорций'},
-    {a:'Несколько людей — в одну сцену',m:'yes',u:'Комбинация 3–5 фото'},
-    {a:'Позы, одежда и фон согласованы',m:'yes',u:'Замена тела + переодевание + правка'},
-    {a:'Каждое фото дорабатывается перед объединением',m:'yes',u:'Работа с качеством каждого фото'},
-    {a:'Повреждённые фото восстанавливаются в рамках работы',m:'part',u:'Лёгкая реставрация — да, сложная → Restore',n:'К3 лайт входит, К5–К6 тяжёлая → Restore'},
-  ],feats:[
-    {t:'Два или более фото объединяются в единую, естественную сцену',tp:'a'},
-    {t:'Позы, пропорции и фон согласованы — выглядит как один реальный момент',tp:'a'},
-    {t:'Каждое фото дорабатывается индивидуально перед объединением',tp:'a'},
-    {t:'Одежда и детали образа корректируются при необходимости',tp:'a'},
-    {t:'Лёгкое восстановление качества фото включено в работу',tp:'e',n:'Тяжёлая реставрация — отдельная категория Restore'},
-    {t:'До 5 фото, до 5 правок в одном заказе',tp:'u'},
-  ]},
-  restore:{rows:[
-    {a:'У Артёма нет отдельной категории реставрации',m:'no',u:'Restore — отдельная категория $150',n:'Главное расхождение. Артём включает реставрацию в «Одно фото $49»'},
-    {a:'Старое/повреждённое — восстановим в «Одно фото»',m:'no',u:'Мы выносим это в Restore $150',n:'При $49 сложная реставрация экономически невозможна'},
-    {a:'Реставрация и работа с позой включены (в «6+ фото»)',m:'part',u:'Restore покрывает полную реставрацию',n:'У Артёма упомянуто только в «6+ фото $295»'},
-  ],feats:[
-    {t:'Полное восстановление повреждённых, пожелтевших или выцветших фото',tp:'u'},
-    {t:'Чёрно-белое фото → цветное с дорисовкой деталей лица',tp:'u'},
-    {t:'Реставрация + объединение с другим фото в одной работе',tp:'u'},
-    {t:'Сложная замена частей тела, поз, сложный ракурс',tp:'u'},
-    {t:'Реставрация и работа с позой при необходимости',tp:'e',n:'Формулировку взяли из описания Артёма для «6+ фото» — она точнее'},
-    {t:'1–6 фото в работе, 5–9 правок',tp:'u'},
-  ]},
-  art:{rows:[
-    {a:'Сложная авторская композиция из 6+ изображений',m:'yes',u:'Авторский проект 6–10+ изображений'},
-    {a:'Фон, сезон или обстановка могут быть переосмыслены',m:'yes',u:'Смена сезона / времени года (сложная)'},
-    {a:'Реставрация и работа с позой включены при необходимости',m:'yes',u:'Реставрация + объединение + тело + фон'},
-    {a:'Лучший выбор для мемориальных и семейных работ',m:'yes',u:'Добавляем как слоган'},
-  ],feats:[
-    {t:'Сложная авторская композиция из 6 и более изображений',tp:'a'},
-    {t:'Фон, сезон или обстановка могут быть полностью переосмыслены',tp:'a'},
-    {t:'Реставрация, замена тела и работа с позой включены',tp:'a'},
-    {t:'Идеально для мемориальных картин, семейных сцен и творческих проектов',tp:'a'},
-    {t:'10+ правок, авторский подход к каждому элементу',tp:'u'},
-    {t:'Смена сезона, времени суток, полный перерисов фона',tp:'u'},
-  ]},
+// ART DESCRIPTIONS per category
+const ART_DESCS = {
+  zero: [
+    {text:'Поделитесь фото и расскажите, что у вас в голове',match:'yes'},
+    {text:'Мы лично порекомендуем нужный уровень работы',match:'yes'},
+    {text:'Никаких доплат, пока вы не подтвердите',match:'yes'},
+    {text:'Объект выровнен, кадр приведён в порядок',match:'part'},
+  ],
+  touch: [
+    {text:'Чёткость и детализация улучшены для более выразительного результата',match:'yes'},
+    {text:'Освещение и фон скорректированы при необходимости',match:'yes'},
+    {text:'Чёрно-белое фото переведено в цветное',match:'yes'},
+    {text:'Ненужные объекты или отвлекающие детали убраны',match:'yes'},
+    {text:'Небольшие правки по одежде или деталям образа',match:'yes'},
+    {text:'Старое или повреждённое фото? Восстановим в рамках этой работы',match:'part',note:'У нас — Restore отдельная категория'},
+  ],
+  fusion: [
+    {text:'Два фото объединяются в единую сбалансированную композицию',match:'yes'},
+    {text:'Позы и пропорции выстраиваются так, чтобы выглядело как один реальный момент',match:'yes'},
+    {text:'Несколько людей или референсов — в одну сцену',match:'yes'},
+    {text:'Позы, одежда и фон согласовываются между собой',match:'yes'},
+    {text:'Каждое фото отдельно дорабатывается перед объединением',match:'yes'},
+    {text:'Повреждённые или выцветшие фото восстанавливаются в рамках работы',match:'part',note:'Лёгкая реставрация входит, сложная → Restore'},
+    {text:'Если одно фото старое или повреждённое — восстановим перед объединением',match:'part',note:'Лёгкая — да, сложная → Restore'},
+  ],
+  restore: [
+    {text:'Полное восстановление повреждённых / пожелтевших фото',match:'yes'},
+    {text:'ЧБ → цветное с дорисовкой деталей лица',match:'yes'},
+    {text:'Реставрация и работа с позой включены при необходимости',match:'yes'},
+    {text:'Сложная замена частей тела, поз (сложный ракурс)',match:'yes'},
+    {text:'У Артёма нет отдельной категории для реставрации — она размыта',match:'no',note:'Главное расхождение! Артём включает реставрацию в «Одно фото $49»'},
+  ],
+  art: [
+    {text:'Сложная авторская композиция из 6 и более изображений',match:'yes'},
+    {text:'Фон, сезон или обстановка могут быть переосмыслены',match:'yes'},
+    {text:'Реставрация и работа с позой включены при необходимости',match:'yes'},
+    {text:'Лучший выбор для мемориальных, семейных или творческих работ',match:'yes'},
+  ],
 };
 
-const DC=[
-  {id:'zero', c:'teal',nm:'Посмотрим вместе',lb:'Нулевой вход',   sl:'«Не уверены? Пришлите фото — мы подскажем»', p:0,  fs:['fa1','fa2'],z:true},
-  {id:'touch', c:'blue',nm:'Touch Up',        lb:'Улучшение фото', sl:'«Одно фото — сделай красиво»',               p:50, fs:['f01','f02','f03','f04','f05','f06','f07','f08']},
-  {id:'fusion',c:'green',nm:'Reunion',         lb:'Объединение',    sl:'«Собери всех вместе»',                        p:100,fs:['f09','f10','f11','f12','f13','f14','f15','f16','f17','f18']},
-  {id:'restore',c:'gold',nm:'Restore',          lb:'Реставрация',    sl:'«Верни к жизни старое фото»',                p:150,fs:['f23','f24','f25','f26','f27','f28','f29']},
-  {id:'art',   c:'gray',nm:'Masterpiece',      lb:'Авторский проект',sl:'«Создай нечто совершенно новое»',           p:250,fs:['f30','f31','f32','f33']},
+// DEFAULT CONFIG
+const DEFAULT_CATS = [
+  {
+    id:'zero',color:'teal',name:'Посмотрим вместе',label:'Нулевой вход',
+    slogan:'«Не уверены? Пришлите фото — мы подскажем»',price:0,
+    feats:['fa1','fa2'],srcKeys:[],isZero:true
+  },
+  {
+    id:'touch',color:'blue',name:'Touch Up',label:'Улучшение фото',
+    slogan:'«Одно фото — сделай красиво»',price:50,
+    feats:['f01','f02','f03','f04','f05','f06','f07','f08'],srcKeys:[1,2]
+  },
+  {
+    id:'fusion',color:'green',name:'Reunion',label:'Объединение фото',
+    slogan:'«Собери всех вместе»',price:100,
+    feats:['f09','f10','f11','f12','f13','f14','f15','f16','f17','f18'],srcKeys:[3,4]
+  },
+  {
+    id:'restore',color:'gold',name:'Restore',label:'Реставрация',
+    slogan:'«Верни к жизни старое фото»',price:150,
+    feats:['f23','f24','f25','f26','f27','f28','f29'],srcKeys:[5,6]
+  },
+  {
+    id:'art',color:'gray',name:'Masterpiece',label:'Авторский проект',
+    slogan:'«Создай нечто совершенно новое»',price:250,
+    feats:['f30','f31','f32','f33'],srcKeys:[7]
+  },
 ];
 
-let CATS,FM;const SK='ptv3';let _n=0;
-const CL=['blue','green','gold','gray','teal'];
-function ci(c){return{blue:'var(--blue-hi)',green:'var(--green-hi)',gold:'var(--gold-hi)',gray:'var(--gray-hi)',teal:'var(--teal-hi)'}[c]||'var(--text)';}
+let CATS, FEAT_MAP;
+const STORAGE_KEY = 'portraithy_v3';
+let _dragFid = null;
 
-function load(){try{const s=localStorage.getItem(SK);if(s){const d=JSON.parse(s);CATS=d.c;FM=d.f;return;}}catch(e){}rst();}
-function rst(){CATS=JSON.parse(JSON.stringify(DC));FM={};CATS.forEach(c=>{FM[c.id]=c.fs.slice();});}
-function save(){localStorage.setItem(SK,JSON.stringify({c:CATS,f:FM}));}
+function loadState(){
+  try{
+    const s=localStorage.getItem(STORAGE_KEY);
+    if(s){const d=JSON.parse(s);CATS=d.cats;FEAT_MAP=d.featMap;return;}
+  }catch(e){}
+  resetState();
+}
+function resetState(){
+  CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));
+  FEAT_MAP={};
+  CATS.forEach(c=>{ FEAT_MAP[c.id]=c.feats.slice(); });
+}
+function saveState(){
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({cats:CATS,featMap:FEAT_MAP}));
+  showSaved();
+}
 
-function ord(id){
-  if(CATS.find(c=>c.id===id)?.z) return 0;
-  let t=0;(FM[id]||[]).forEach(fid=>{const f=AF.find(x=>x.id===fid);if(!f||f.k==='a') return;const s=SRC.find(x=>x.id===f.k);if(s)t+=s.o*f.s;});return Math.round(t);
+// ══════════════════════════════════════════════════════
+// CALCULATIONS
+// ══════════════════════════════════════════════════════
+function calcOrders(catId){
+  if(CATS.find(c=>c.id===catId)?.isZero) return 0;
+  let t=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(s) t+=s.orders*f.share;
+  });
+  return Math.round(t);
 }
-function frev(id){let t=0;(FM[id]||[]).forEach(fid=>{const f=AF.find(x=>x.id===fid);if(!f||f.k==='a') return;const s=SRC.find(x=>x.id===f.k);if(s)t+=s.o*f.s*s.p;});return Math.round(t);}
-function mgn(id){
-  const feats=FM[id]||[];let to=0,tc=0;
-  feats.forEach(fid=>{const f=AF.find(x=>x.id===fid);if(!f||f.k==='a') return;const s=SRC.find(x=>x.id===f.k);if(!s) return;const o=s.o*f.s;to+=o;tc+=o*s.c;});
-  if(to===0) return{pct:0,mg:0,co:0,rv:0};
-  const cat=CATS.find(c=>c.id===id);
-  const price=cat?cat.p:0;const o2=ord(id);const rv=o2*price;const co=Math.round(tc/to*o2);const mg=rv-co;const pct=rv>0?mg/rv:0;
-  return{pct,mg:Math.round(mg),co,rv};
+function calcFactRev(catId){
+  let t=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(s) t+=s.orders*f.share*s.price;
+  });
+  return Math.round(t);
 }
-function comp(){
-  let rev=0;const rows=CATS.map(c=>{const o=ord(c.id);const fr=frev(c.id);const mr=c.z?0:o*c.p;const m=mgn(c.id);rev+=mr;return{cat:c,o,fr,mr,delta:mr-fr,m};});
+function computeAll(){
+  let rev=0;
+  const rows=CATS.map(c=>{
+    const orders=calcOrders(c.id);
+    const factRev=calcFactRev(c.id);
+    const matRev=c.isZero?0:orders*c.price;
+    rev+=matRev;
+    return{cat:c,orders,factRev,matRev,delta:matRev-factRev};
+  });
   return{rev:Math.round(rev),rows};
 }
+
+// ══════════════════════════════════════════════════════
+// RENDER
+// ══════════════════════════════════════════════════════
 function fmt(n){return'$'+Math.abs(Math.round(n)).toLocaleString('ru-RU').replace(/\s/g,' ');}
 
-function rCards(){
-  const g=document.getElementById('cards-grid');g.innerHTML='';
+function renderCards(){
+  const g=document.getElementById('cards-grid');
+  g.innerHTML='';
   CATS.forEach(c=>{
-    const o=ord(c.id);const pct=o>0?(o/1548*100).toFixed(1):'—';
-    const fl=(FM[c.id]||[]).map(fid=>{const f=AF.find(x=>x.id===fid);if(!f) return '';
-      return '<li><span class=\"ck\">✓</span><span>'+f.t+'<span class=\"'+(f.k==='a'?'ab':'sb')+'\">'+(f.k==='a'?'А':'К'+f.k)+'</span></span></li>';}).join('');
-    const ps=c.p===0?'$0 — бесплатно':'$'+c.p;
-    const el=document.createElement('div');el.className='cat-card';el.dataset.color=c.c;
-    el.innerHTML='<div class=\"card-head\"><div class=\"card-label\">'+c.lb+'</div><div class=\"card-name\">'+c.nm+'</div><div class=\"card-price\">'+ps+'</div></div>'
-      +'<div class=\"card-body\"><div class=\"card-slogan\">'+c.sl+'</div><hr class=\"card-sep\">'
-      +'<ul class=\"feat-list\">'+(fl||'<li><span style=\"color:var(--text3)\">Работ нет — добавьте в Настройках</span></li>')+'</ul>'
-      +'<div class=\"card-footer\">'+(c.z?'<span style=\"color:var(--teal-hi)\">Точка входа · консультация · $0</span>':'~'+o.toLocaleString()+' зак. · ~'+pct+'%')+'</div></div>';
-    g.appendChild(el);
+    const orders=calcOrders(c.id);
+    const pct=orders>0?(orders/1548*100).toFixed(1):'—';
+    const feats=(FEAT_MAP[c.id]||[]).map(fid=>{
+      const f=ALL_FEATS.find(x=>x.id===fid);
+      if(!f) return '';
+      const badge=f.srcK==='a'?`<span class="art-badge">А</span>`:`<span class="art-badge" style="background:rgba(96,165,250,.1);color:#93c5fd">К${f.srcK}</span>`;
+      return `<li><span class="ck">✓</span><span>${f.text}${badge}</span></li>`;
+    }).join('');
+    const priceStr=c.price===0?'$0 — бесплатно':'$'+c.price;
+    const div=document.createElement('div');
+    div.className='cat-card'; div.dataset.color=c.color;
+    div.innerHTML=`
+      <div class="card-head">
+        <div class="card-label">${c.label}</div>
+        <div class="card-name">${c.name}</div>
+        <div class="card-price">${priceStr}</div>
+      </div>
+      <div class="card-body">
+        <div class="card-slogan">${c.slogan}</div>
+        <hr class="card-sep">
+        <ul class="feat-list">${feats||'<li><span style="color:var(--text3)">Нет работ в этой категории</span></li>'}</ul>
+        <div class="card-footer">
+          ${c.isZero?'<span style="color:var(--teal-hi)">Точка входа · без оплаты · консультация</span>'
+            :`<div>~${orders.toLocaleString()} заказов · ~${pct}% от всех</div>`}
+        </div>
+      </div>`;
+    g.appendChild(div);
   });
 }
 
-function rFin(){
-  const{rev,rows}=comp();const d=rev-BR,pct=(d/BR*100).toFixed(1);
+function renderFinance(){
+  const {rev,rows}=computeAll();
+  const delta=rev-BASE_REV;
+  const pct=(delta/BASE_REV*100).toFixed(1);
   document.getElementById('kpi-rev').textContent=fmt(rev);
-  const de=document.getElementById('kpi-delta');de.textContent=(d>=0?'+':'')+fmt(d);de.className='kpi-val '+(d>=0?'pos':'neg');
-  document.getElementById('kpi-pct').textContent=(d>=0?'+':'')+pct+'% к факту 2025';
-  const tb=document.getElementById('fin-body');tb.innerHTML='';
-  const rc={blue:'rb',green:'rg',gold:'rgo',gray:'rgr',teal:'rt'};
+  const el=document.getElementById('kpi-delta');
+  el.textContent=(delta>=0?'+':'')+fmt(delta);
+  el.className=delta>=0?'kpi-val pos':'kpi-val neg';
+  document.getElementById('kpi-pct').textContent=(delta>=0?'+':'')+pct+'% к факту 2025';
+
+  const tb=document.getElementById('fin-body');
+  tb.innerHTML='';
+  let totOrd=0,totMat=0,totFact=0;
   rows.forEach(r=>{
-    const dv=r.mr-r.fr;const mp=r.m.pct>0?(r.m.pct*100).toFixed(0)+'%':'—';const mc=r.m.pct>.6?'var(--pos)':r.m.pct>.4?'var(--warn)':'var(--neg)';
-    const tr=document.createElement('tr');tr.className=rc[r.cat.c]||'rb';
-    tr.innerHTML='<td><strong style=\"color:'+ci(r.cat.c)+'\">'+r.cat.nm+'</strong>'+(r.cat.z?' <span style=\"font-size:9px;color:var(--teal-hi)\">(нулевой вход)</span>':'')+'</td>'
-      +'<td class=\"mono\">'+(r.cat.z?'$0':'$'+r.cat.p)+'</td>'
-      +'<td class=\"mono\">'+(r.cat.z?'—':r.o.toLocaleString())+'</td>'
-      +'<td class=\"mono '+(r.cat.z?'neu':'pos')+'\">'+( r.cat.z?'$0':fmt(r.mr))+'</td>'
-      +'<td class=\"mono neu\">'+(r.cat.z?'—':fmt(r.fr))+'</td>'
-      +'<td class=\"mono '+(dv>=0&&!r.cat.z?'pos':r.cat.z?'neu':'neg')+'\">'+( r.cat.z?'—':(dv>=0?'+':'')+fmt(dv))+'</td>'
-      +'<td class=\"mono\" style=\"color:'+mc+'\">'+mp+'</td>';
+    totOrd+=r.orders; totMat+=r.matRev; totFact+=r.factRev;
+    const tr=document.createElement('tr');
+    const colorMap={blue:'row-blue',green:'row-green',gold:'row-gold',gray:'row-gray',teal:'row-teal'};
+    tr.className=colorMap[r.cat.color]||'row-blue';
+    const d=r.matRev-r.factRev;
+    tr.innerHTML=`
+      <td><strong style="color:${colorOf(r.cat.color)}">${r.cat.name}</strong>${r.cat.isZero?' <span style="font-size:9px;color:var(--teal-hi)">(нулевой вход)</span>':''}</td>
+      <td class="mono">${r.cat.isZero?'$0':'$'+r.cat.price}</td>
+      <td class="mono">${r.cat.isZero?'—':r.orders.toLocaleString()}</td>
+      <td class="mono ${r.cat.isZero?'neu':'pos'}">${r.cat.isZero?'$0 (консультация)':fmt(r.matRev)}</td>
+      <td class="mono neu">${r.cat.isZero?'—':fmt(r.factRev)}</td>
+      <td class="mono ${d>=0&&!r.cat.isZero?'pos':r.cat.isZero?'neu':'neg'}">${r.cat.isZero?'—':(d>=0?'+':'')+fmt(d)}</td>`;
     tb.appendChild(tr);
   });
-  const tot=document.createElement('tr');tot.className='rtot';const td2=rev-BR;
-  tot.innerHTML='<td>ИТОГО</td><td></td><td class=\"mono\">~'+rows.reduce((a,r)=>a+r.o,0).toLocaleString()+'</td><td class=\"mono pos\">'+fmt(rev)+'</td><td class=\"mono neu\">'+fmt(rows.reduce((a,r)=>a+r.fr,0))+'</td><td class=\"mono '+(td2>=0?'pos':'neg')+'\">'+(td2>=0?'+':'')+fmt(td2)+'</td><td></td>';
+  const tot=document.createElement('tr');
+  tot.className='row-total';
+  const td=totMat-totFact;
+  tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(totFact)}</td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
   tb.appendChild(tot);
 }
 
-function rSettings(){
-  const sg=document.getElementById('sgrid');sg.innerHTML='';
+function colorOf(c){
+  return{blue:'var(--blue-hi)',green:'var(--green-hi)',gold:'var(--gold-hi)',gray:'var(--gray-hi)',teal:'var(--teal-hi)'}[c]||'var(--text)';
+}
+
+function renderSettings(){
+  // Price cards
+  const sg=document.getElementById('settings-grid');
+  sg.innerHTML='';
   CATS.forEach(c=>{
-    const o=ord(c.id);const m=mgn(c.id);const mp=(m.pct*100).toFixed(1);const mc=m.pct>.6?'var(--pos)':m.pct>.4?'var(--warn)':'var(--neg)';
-    const d=document.createElement('div');d.className='pc';
-    d.innerHTML='<div class=\"pc-head\"><div class=\"pcdot '+c.c+'\"></div>'
-      +'<input class=\"pni '+c.c+'\" value=\"'+c.nm+'\" title=\"Нажмите для редактирования\" onchange=\"rnm(\''+c.id+'\',this.value)\" onblur=\"rnm(\''+c.id+'\',this.value)\"></div>'
-      +'<div class=\"pr\"><div class=\"prl\">Цена</div><div class=\"prw\"><div class=\"prd\">$</div>'
-      +'<input class=\"pri\" type=\"number\" min=\"0\" max=\"9999\" step=\"5\" value=\"'+c.p+'\" id=\"pi-'+c.id+'\" onchange=\"sp(\''+c.id+'\',this.value)\" oninput=\"sr(\''+c.id+'\',this.value)\"></div></div>'
-      +'<input class=\"prng\" type=\"range\" min=\"0\" max=\"500\" step=\"5\" value=\"'+Math.min(c.p,500)+'\" id=\"pr-'+c.id+'\" oninput=\"si(\''+c.id+'\',this.value)\">'
-      +'<div class=\"prnl\"><span>$0</span><span>$500</span></div>'
-      +(c.z?'<div class=\"irow\"><span class=\"irl\">Тип</span><span class=\"irv\" style=\"color:var(--teal-hi)\">Нулевой вход · консультация</span></div>'
-        :'<div class=\"irow\"><span class=\"irl\">Заказов/год</span><span class=\"irv\">'+o.toLocaleString()+'</span></div>'
-        +'<div class=\"irow\"><span class=\"irl\">Выручка</span><span class=\"irv\">'+fmt(o*c.p)+'</span></div>'
-        +'<div class=\"mblock\"><div class=\"mttl\">Маржинальность при текущем составе</div>'
-        +'<div class=\"mgrid\">'
-        +'<div class=\"mbox\"><div class=\"mbox-v\" style=\"color:'+mc+'\">'+mp+'%</div><div class=\"mbox-l\">Маржа %</div></div>'
-        +'<div class=\"mbox\"><div class=\"mbox-v\" style=\"color:var(--pos)\">'+fmt(m.mg)+'</div><div class=\"mbox-l\">Маржа $</div></div>'
-        +'<div class=\"mbox\"><div class=\"mbox-v\">'+fmt(m.rv)+'</div><div class=\"mbox-l\">Выручка</div></div>'
-        +'<div class=\"mbox\"><div class=\"mbox-v\" style=\"color:var(--neg)\">'+fmt(m.co)+'</div><div class=\"mbox-l\">Затраты</div></div>'
-        +'</div><div class=\"mbar-w\"><div class=\"mbar-l\"><span>Маржа</span><span style=\"color:'+mc+'\">'+mp+'%</span></div>'
-        +'<div class=\"mbar-t\"><div class=\"mbar-f\" style=\"width:'+Math.min(100,m.pct*100).toFixed(1)+'%\"></div></div></div></div>')
-      +'<button class=\"delbtn\" onclick=\"delCat(\''+c.id+'\',\''+c.nm+'\')\">✕ Удалить категорию</button>';
+    const orders=calcOrders(c.id);
+    const d=document.createElement('div');
+    d.className='pc';
+    d.innerHTML=`
+      <div class="pc-head">
+        <div class="pc-dot ${c.color}"></div>
+        <input class="pc-name-input ${c.color}" value="${c.name}"
+          onchange="renameCat('${c.id}',this.value)" title="Нажмите для редактирования названия">
+      </div>
+      <div class="price-row">
+        <div class="price-lbl">Цена</div>
+        <div class="price-wrap">
+          <div class="price-dollar">$</div>
+          <input class="price-inp" type="number" min="0" max="9999" step="5"
+            value="${c.price}" id="pi-${c.id}"
+            onchange="setPrice('${c.id}',this.value)"
+            oninput="syncRange('${c.id}',this.value)">
+        </div>
+      </div>
+      <input class="price-range" type="range" min="0" max="500" step="5"
+        value="${c.price}" id="pr-${c.id}"
+        oninput="syncInput('${c.id}',this.value)">
+      <div class="price-range-lbl"><span>$0</span><span>$500</span></div>
+      ${c.isZero?`<div class="info-row"><span class="info-row-lbl">Тип</span><span class="info-row-val" style="color:var(--teal-hi)">Нулевой вход</span></div>`:`
+      <div class="info-row"><span class="info-row-lbl">Заказов/год</span><span class="info-row-val">${orders.toLocaleString()}</span></div>
+      <div class="info-row"><span class="info-row-lbl">Выручка</span><span class="info-row-val">${fmt(orders*c.price)}</span></div>`}
+      ${!DEFAULT_CATS.find(dc=>dc.id===c.id)?`<button class="del-btn" onclick="deleteCategory('${c.id}')">✕ Удалить категорию</button>`:''}`;
     sg.appendChild(d);
   });
 
-  const dg=document.getElementById('dndg');dg.innerHTML='';
+  // DnD
+  const dg=document.getElementById('dnd-grid');
+  dg.innerHTML='';
   CATS.forEach(c=>{
-    const o=ord(c.id);const m=mgn(c.id);
-    const col=document.createElement('div');col.className='dndc';col.dataset.cat=c.id;
-    col.innerHTML='<div class=\"dndch\"><div class=\"pcdot '+c.c+'\" style=\"width:7px;height:7px;border-radius:50%\"></div>'
-      +'<span style=\"color:'+ci(c.c)+'\">'+c.nm+'</span>'
-      +'<span style=\"font-size:9px;color:var(--text3);margin-left:auto\">'+'$'+c.p+(c.z?'':' · ~'+o+' · '+(m.pct*100).toFixed(0)+'%м')+'</span></div>'
-      +'<div class=\"dndi-wrap\" id=\"di-'+c.id+'\" data-cat=\"'+c.id+'\"></div>';
+    const col=document.createElement('div');
+    col.className='dnd-col'; col.dataset.cat=c.id;
+    const orders=calcOrders(c.id);
+    col.innerHTML=`
+      <div class="dnd-col-head">
+        <div class="pc-dot ${c.color}" style="width:7px;height:7px;border-radius:50%"></div>
+        <span style="color:${colorOf(c.color)}">${c.name}</span>
+        <span style="font-size:9px;color:var(--text3);margin-left:auto">$${c.price}${c.isZero?'':' · ~'+orders}</span>
+      </div>
+      <div class="dnd-items" id="di-${c.id}" data-cat="${c.id}"></div>`;
     dg.appendChild(col);
-    const iw=col.querySelector('.dndi-wrap');
-    (FM[c.id]||[]).forEach(fid=>{iw.appendChild(mkItem(fid));});
-    setupDrop(iw);
+
+    const items=col.querySelector('.dnd-items');
+    (FEAT_MAP[c.id]||[]).forEach(fid=>{ items.appendChild(makeDndItem(fid)); });
+    setupDrop(items);
   });
 }
 
-function mkItem(fid){
-  const f=AF.find(x=>x.id===fid);if(!f){return document.createElement('div');}
-  const el=document.createElement('div');el.className='dndi';el.draggable=true;el.dataset.fid=fid;
-  const bc=f.k==='a'?'ska':`sk${f.k}`;const bl=f.k==='a'?'А':'К'+f.k;
-  const ap=f.k==='a'?0:Math.round((SRC.find(s=>s.id===f.k)||{o:0}).o*f.s);
-  el.innerHTML='<span class=\"kb '+bc+'\">'+bl+'</span><span class=\"ft\">'+f.t+'</span>'+(ap>0?'<span class=\"oc\">~'+ap+'</span>':'');
-  el.addEventListener('dragstart',e=>{el.classList.add('dragging');e.dataTransfer.setData('text/plain',fid);});
+function makeDndItem(fid){
+  const f=ALL_FEATS.find(x=>x.id===fid);
+  if(!f) return document.createElement('div');
+  const el=document.createElement('div');
+  el.className='dnd-item'; el.draggable=true; el.dataset.fid=fid;
+  const k=f.srcK;
+  const badgeCls=k==='a'?'sa':`sk${k}`;
+  const approx=k==='a'?0:Math.round((SRC.find(s=>s.id===k)||{orders:0}).orders*f.share);
+  el.innerHTML=`<span class="src-badge ${badgeCls}">${k==='a'?'А':'К'+k}</span><span class="feat-text">${f.text}</span>${approx>0?`<span class="ord-chip">~${approx}</span>`:''}`;
+  el.addEventListener('dragstart',e=>{_dragFid=fid;el.classList.add('dragging');e.dataTransfer.setData('text/plain',fid);});
   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
   return el;
 }
+
 function setupDrop(el){
-  el.addEventListener('dragover',e=>{e.preventDefault();el.closest('.dndc').classList.add('drag-over');});
-  el.addEventListener('dragleave',()=>el.closest('.dndc').classList.remove('drag-over'));
+  el.addEventListener('dragover',e=>{e.preventDefault();el.closest('.dnd-col').classList.add('drag-over');});
+  el.addEventListener('dragleave',()=>el.closest('.dnd-col').classList.remove('drag-over'));
   el.addEventListener('drop',e=>{
-    e.preventDefault();el.closest('.dndc').classList.remove('drag-over');
-    const tgt=el.dataset.cat;const fid=e.dataTransfer.getData('text/plain');if(!fid) return;
-    Object.keys(FM).forEach(k=>{FM[k]=(FM[k]||[]).filter(x=>x!==fid);});
-    if(!FM[tgt]) FM[tgt]=[];if(!FM[tgt].includes(fid)) FM[tgt].push(fid);
-    mark();rAll();
+    e.preventDefault();
+    el.closest('.dnd-col').classList.remove('drag-over');
+    const tgt=el.dataset.cat;
+    const fid=e.dataTransfer.getData('text/plain');
+    if(!fid) return;
+    Object.keys(FEAT_MAP).forEach(k=>{FEAT_MAP[k]=FEAT_MAP[k].filter(x=>x!==fid);});
+    if(!(FEAT_MAP[tgt]||[]).includes(fid)){
+      if(!FEAT_MAP[tgt]) FEAT_MAP[tgt]=[];
+      FEAT_MAP[tgt].push(fid);
+    }
+    markChanged();
+    renderAll();
   });
 }
 
-function rDesc(){
-  const mt=document.getElementById('sp-match');mt.innerHTML='';
-  const cmap={zero:'Посмотрим вместе',touch:'Touch Up',fusion:'Reunion',restore:'Restore',art:'Masterpiece'};
-  Object.entries(DD).forEach(([cid,data])=>{
-    const c=CATS.find(x=>x.id===cid);if(!c) return;
-    const card=document.createElement('div');card.className='dmb';
-    let h='<h3 style=\"font-size:13px;font-weight:700;color:'+ci(c.c)+';margin-bottom:3px\">'+c.nm+' — '+c.lb+'</h3>'
-      +'<div style=\"font-size:10px;color:var(--text3);margin-bottom:10px\">Тексты Артёма ↔ наш вариант</div>'
-      +'<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;font-weight:600;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--bdr);margin-bottom:2px;\">'
-      +'<span style=\"color:#a78bfa\">Артём</span><span style=\"color:var(--blue-hi)\">Наш вариант</span></div>';
-    data.rows.forEach(r=>{
-      const chip=r.m==='yes'?'<span class=\"mc my\">✓ подходит</span>':r.m==='part'?'<span class=\"mc mp\">≈ частично</span>':'<span class=\"mc mn\">✗ нет аналога</span>';
-      h+='<div class=\"drg\"><div class=\"dart\">'+r.a+'</div><div><div class=\"dus\">'+r.u+'</div>'+chip+(r.n?'<div style=\"font-size:9.5px;color:var(--text3);margin-top:3px;font-style:italic\">'+r.n+'</div>':'')+'</div></div>';
+function renderDescriptions(){
+  const ct=document.getElementById('desc-content');
+  ct.innerHTML='';
+  const catMap={zero:'Посмотрим вместе',touch:'Touch Up',fusion:'Reunion',restore:'Restore',art:'Masterpiece'};
+  Object.entries(ART_DESCS).forEach(([catId,rows])=>{
+    const c=CATS.find(x=>x.id===catId);
+    if(!c) return;
+    const card=document.createElement('div');
+    card.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;margin-bottom:14px;';
+    let html=`<h3 style="font-size:13px;font-weight:700;color:${colorOf(c.color)};margin-bottom:4px;">${c.name} — ${c.label}</h3>
+    <div style="font-size:10px;color:var(--text3);margin-bottom:10px">Сопоставление описаний Артёма с нашими работами</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:10px;font-weight:700;color:var(--text3);padding:4px 0;border-bottom:1px solid var(--bdr);margin-bottom:4px;">
+      <span>Текст Артёма</span><span>Статус в нашей матрице</span>
+    </div>`;
+    rows.forEach(r=>{
+      const chip=r.match==='yes'?'<span class="match-chip m-yes">✓ подходит</span>':r.match==='part'?'<span class="match-chip m-part">≈ частично</span>':'<span class="match-chip m-no">✗ нет аналога</span>';
+      html+=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:11px;line-height:1.5;">
+        <div style="color:#c4b5fd">${r.text}</div>
+        <div>${chip}${r.note?`<div style="color:var(--text3);font-size:10px;margin-top:2px">${r.note}</div>`:''}</div>
+      </div>`;
     });
-    card.innerHTML=h;mt.appendChild(card);
+    card.innerHTML=html;
+    ct.appendChild(card);
   });
-
-  const ft=document.getElementById('sp-final');ft.innerHTML='';
-  ft.innerHTML='<div class=\"fleg\">'
-    +'<div class=\"li\"><div class=\"ls\" style=\"background:rgba(167,139,250,.3)\"></div> А — из текстов Артёма (сохранено)</div>'
-    +'<div class=\"li\"><div class=\"ls\" style=\"background:rgba(96,165,250,.2)\"></div> V — наш вариант (внутренняя логика)</div>'
-    +'<div class=\"li\"><div class=\"ls\" style=\"background:rgba(251,191,36,.2)\"></div> ✎ — изменено по сравнению с Артёмом</div>'
-    +'</div>';
-  Object.entries(DD).forEach(([cid,data])=>{
-    const c=CATS.find(x=>x.id===cid);if(!c) return;
-    const div=document.createElement('div');div.className='fc';div.dataset.color=c.c;
-    const ps=c.p===0?'$0 — бесплатно':'$'+c.p;
-    const fh=data.feats.map(ff=>{
-      const cls=ff.tp==='a'?'fa':ff.tp==='u'?'fu':'fe';
-      const src=ff.tp==='a'?'А':ff.tp==='u'?'V':'✎';
-      return '<div class=\"ff '+cls+'\"><span class=\"ffs\">'+src+'</span><div><div class=\"fft\">'+ff.t+'</div>'+(ff.n?'<div style=\"font-size:9.5px;color:var(--warn);margin-top:3px\">⚠ '+ff.n+'</div>':'')+'</div></div>';
-    }).join('');
-    div.innerHTML='<div class=\"fch\"><div><div style=\"font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.6);margin-bottom:2px\">'+c.lb+'</div><div class=\"fchn\">'+c.nm+'</div></div><div class=\"fchp\">'+ps+'</div></div><div class=\"fcb\">'+fh+'</div>';
-    ft.appendChild(div);
-  });
-  ft.insertAdjacentHTML('beforeend','<div class=\"insight\"><h3>📝 Как читать итоговые описания</h3><p>Фиолетовый (А) — текст Артёма, берём без изменений. Синий (V) — наш вариант. Жёлтый (✎) — мы изменили текст Артёма или переместили работу. Жёлтые пункты — ключевые точки для обсуждения с командой.</p></div>');
+  ct.insertAdjacentHTML('beforeend',`
+    <div class="insight">
+      <h3>📊 Итог по описаниям</h3>
+      <p>Большинство текстов Артёма <strong>хорошо ложатся</strong> на наши категории Touch Up, Reunion и Masterpiece.
+      Главное расхождение — реставрация: Артём включает её в «Одно фото $49», мы — в отдельную категорию Restore $150.
+      <br><br>
+      Рекомендация: взять тексты Артёма как базу для клиентского описания, добавить явное указание количества фото
+      в каждой карточке, сохранить Restore как самостоятельную категорию.</p>
+    </div>`);
 }
 
-function rSrc(){
-  const g=document.getElementById('srcg');g.innerHTML='';
+function renderSource(){
+  const g=document.getElementById('src-grid');
+  g.innerHTML='';
   const cols=['#60a5fa','#93c5fd','#4ade80','#86efac','#fcd34d','#fde68a','#c4b5fd'];
   SRC.forEach(s=>{
-    const col=cols[s.id-1];const d=document.createElement('div');
-    d.style.cssText='background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;';
-    d.innerHTML='<div style=\"display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;\">'
-      +'<div><div style=\"font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:'+col+';margin-bottom:2px\">Категория '+s.id+'</div>'
-      +'<div style=\"font-size:13px;font-weight:700;color:'+col+'\">'+s.lbl+'</div></div>'
-      +'<div style=\"font-size:22px;font-weight:900;color:'+col+';font-family:'JetBrains Mono',monospace\">$'+s.p+'</div></div>'
-      +'<div style=\"display:grid;grid-template-columns:repeat(4,1fr);gap:6px;\">'
-      +[['Заказов',s.o],['Выручка','$'+(s.o*s.p).toLocaleString()],['Маржа',(s.mp*100).toFixed(0)+'%'],['Себест.','$'+s.c]].map(([l,v])=>'<div style=\"background:var(--bg3);border-radius:6px;padding:7px;text-align:center;\">'+'<div style=\"font-size:13px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace\">'+v+'</div><div style=\"font-size:9px;color:var(--text3);margin-top:1px\">'+l+'</div></div>').join('')+'</div>';
+    const col=cols[s.id-1];
+    const d=document.createElement('div');
+    d.style.cssText=`background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;`;
+    d.innerHTML=`
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div>
+          <div style="font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:${col};margin-bottom:2px">Категория ${s.id}</div>
+          <div style="font-size:13px;font-weight:700;color:${col}">${s.label}</div>
+        </div>
+        <div style="font-size:22px;font-weight:900;color:${col};font-family:'JetBrains Mono',monospace">$${s.price}</div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+        ${[['Заказов',s.orders],['Выручка','$'+(s.orders*s.price).toLocaleString()],['Маржа',(s.mp*100).toFixed(0)+'%'],['Себест.','$'+s.cost]].map(([l,v])=>`
+        <div style="background:var(--bg3);border-radius:6px;padding:7px;text-align:center;">
+          <div style="font-size:13px;font-weight:800;color:var(--text);font-family:'JetBrains Mono',monospace">${v}</div>
+          <div style="font-size:9px;color:var(--text3);margin-top:1px">${l}</div>
+        </div>`).join('')}
+      </div>`;
     g.appendChild(d);
   });
 }
 
-function rAll(){rCards();rFin();rSettings();rDesc();}
+function renderAll(){
+  renderCards();
+  renderFinance();
+  renderSettings();
+  renderDescriptions();
+}
 
-function sw(id,btn){document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));document.getElementById('t-'+id).classList.add('active');btn.classList.add('active');}
-function swS(id,btn){document.querySelectorAll('.sub-panel').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.sub-tab').forEach(b=>b.classList.remove('active'));document.getElementById('sp-'+id).classList.add('active');btn.classList.add('active');}
-function sp(id,v){const n=v===''||v===null?0:Math.max(0,parseInt(v)||0);const c=CATS.find(x=>x.id===id);if(c){c.p=n;mark();rAll();}}
-function sr(id,v){const r=document.getElementById('pr-'+id);if(r)r.value=Math.min(v,500);}
-function si(id,v){const i=document.getElementById('pi-'+id);if(i)i.value=v;sp(id,v);}
-function rnm(id,v){const c=CATS.find(x=>x.id===id);if(c&&v.trim()){c.nm=v.trim();mark();rCards();rFin();rSettings();}}
-function saveAll(){save();const b=document.querySelector('.btn-save');if(b){b.textContent='✓ Сохранено';setTimeout(()=>{b.textContent='💾 Сохранить';},1500);}showSaved();}
-function resetAll(){if(!confirm('Сбросить все изменения к умолчаниям?')) return;rst();localStorage.removeItem(SK);rAll();showSaved();}
-function addCat(){_n++;const id='c'+Date.now();const cl=CL[_n%CL.length];CATS.push({id,c:cl,nm:'Категория '+_n,lb:'Новый тип работ',sl:'«Описание»',p:0,fs:[],isCustom:true});FM[id]=[];mark();rAll();sw('settings',document.querySelectorAll('.tab')[2]);setTimeout(()=>document.getElementById('sgrid').lastChild?.scrollIntoView({behavior:'smooth'}),100);}
-function delCat(id,nm){if(!confirm('Удалить категорию «'+nm+'»?\nРаботы из неё останутся в базе.')) return;CATS=CATS.filter(c=>c.id!==id);delete FM[id];mark();rAll();}
-function mark(){document.getElementById('changedBadge').style.display='block';document.getElementById('savedBadge').style.display='none';}
-function showSaved(){document.getElementById('changedBadge').style.display='none';const s=document.getElementById('savedBadge');s.style.display='block';setTimeout(()=>{s.style.display='none';},2000);}
+// ══════════════════════════════════════════════════════
+// CONTROLS
+// ══════════════════════════════════════════════════════
+function sw(id,btn){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('t-'+id).classList.add('active');
+  btn.classList.add('active');
+}
 
-load();rAll();rSrc();
+function setPrice(id,val){
+  const v=val===''?0:Math.max(0,parseInt(val)||0);
+  const c=CATS.find(x=>x.id===id);
+  if(c){ c.price=v; markChanged(); renderAll(); }
+}
+function syncRange(id,val){const r=document.getElementById('pr-'+id);if(r)r.value=val;}
+function syncInput(id,val){
+  const i=document.getElementById('pi-'+id);
+  if(i)i.value=val;
+  setPrice(id,val);
+}
+function renameCat(id,val){
+  const c=CATS.find(x=>x.id===id);
+  if(c){c.name=val;markChanged();renderCards();renderFinance();}
+}
+
+function saveAll(){
+  saveState();
+  const b=document.querySelector('.btn-save');
+  if(b){b.textContent='✓ Сохранено';setTimeout(()=>{b.textContent='💾 Сохранить';},1500);}
+}
+function resetAll(){
+  if(!confirm('Сбросить все изменения к умолчаниям?')) return;
+  resetState();
+  localStorage.removeItem(STORAGE_KEY);
+  showSaved();
+  renderAll();
+}
+
+let _newCatCount=0;
+const COLOR_CYCLE=['blue','green','gold','gray','teal'];
+function addCategory(){
+  _newCatCount++;
+  const id='custom'+_newCatCount;
+  const color=COLOR_CYCLE[_newCatCount%COLOR_CYCLE.length];
+  const newCat={
+    id,color,
+    name:'Новая категория '+_newCatCount,
+    label:'Новый тип работ',
+    slogan:'«Описание новой категории»',
+    price:0,
+    feats:[],srcKeys:[],
+    isCustom:true
+  };
+  CATS.push(newCat);
+  FEAT_MAP[id]=[];
+  markChanged();
+  renderAll();
+  // Switch to settings to show new card
+  sw('settings',document.querySelectorAll('.tab')[2]);
+}
+function deleteCategory(id){
+  if(!confirm('Удалить категорию? Работы из неё будут потеряны.')) return;
+  CATS=CATS.filter(c=>c.id!==id);
+  delete FEAT_MAP[id];
+  markChanged();
+  renderAll();
+}
+
+function markChanged(){
+  document.getElementById('changedBadge').style.display='block';
+  document.getElementById('savedBadge').style.display='none';
+}
+function showSaved(){
+  document.getElementById('changedBadge').style.display='none';
+  const s=document.getElementById('savedBadge');
+  s.style.display='block';
+  setTimeout(()=>{s.style.display='none';},2000);
+}
+
+// ══════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════
+loadState();
+renderAll();
+renderSource();
 </script>
 </body>
 </html>
