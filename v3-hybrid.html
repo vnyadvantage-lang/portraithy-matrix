@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portraithy · v3-hybrid · r2</title>
+<title>Portraithy · v3-hybrid · r3</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
@@ -77,7 +77,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .sec-sub{font-size:12px;color:var(--text2);margin-bottom:20px;line-height:1.6;}
 
 /* ── CARDS GRID ── */
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-bottom:24px;}
 
 .cat-card{border-radius:var(--r);border:1.5px solid transparent;overflow:hidden;transition:transform .2s,box-shadow .2s;}
 .cat-card:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,0,0,.4);}
@@ -108,7 +108,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .card-stats{font-weight:700;color:var(--text2);margin-top:1px;}
 
 /* ── FINANCE ── */
-.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px;}
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
 .kpi{background:var(--surf);border:1px solid var(--bdr);border-radius:var(--r);padding:14px 16px;}
 .kpi-lbl{font-size:10px;color:var(--text3);margin-bottom:4px;}
 .kpi-val{font-size:22px;font-weight:900;font-family:'JetBrains Mono',monospace;}
@@ -211,6 +211,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .sa{background:#0a2a2a;color:#22d3ee;}
 .dnd-item .feat-text{flex:1;line-height:1.4;}
 .dnd-item .ord-chip{font-size:8px;color:var(--text3);flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.dnd-item .cost-chip{font-size:8px;color:var(--neg);flex-shrink:0;font-family:'JetBrains Mono',monospace;opacity:.8;}
+.dnd-item .cost-chip.free{color:var(--teal-hi);}
+.ai-toggle{font-size:11px;cursor:pointer;flex-shrink:0;line-height:1;filter:grayscale(1);opacity:.4;transition:all .15s;padding:0 1px;}
+.ai-toggle:hover{opacity:.8;}
+.ai-toggle.on{filter:none;opacity:1;text-shadow:0 0 6px var(--teal-hi);}
+.alt-hint{display:inline-block;font-size:8px;margin-left:4px;padding:0 4px;border-radius:3px;background:rgba(234,179,8,.12);color:var(--gold-hi);font-family:'JetBrains Mono',monospace;}
 
 /* ACTION BUTTONS */
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;margin-bottom:28px;}
@@ -267,8 +273,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <!-- HEADER -->
 <div class="hdr">
   <div>
-    <div class="hdr-logo">Portraithy <span>·</span> v3-hybrid</div>
-    <div class="hdr-sub">5 категорий · нулевой вход · редактируемые цены · drag-and-drop</div>
+    <div class="hdr-logo">Portraithy <span>·</span> v3-hybrid <span style="font-size:10px;color:var(--text3);font-weight:600">r3</span></div>
+    <div class="hdr-sub">5 категорий · нулевой вход · К4 возвращена · себестоимость + маржа · AI/$0</div>
   </div>
   <div class="hdr-right">
     <div class="changed-badge" id="changedBadge">⚡ Есть изменения</div>
@@ -317,10 +323,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="kpi" style="border-color:var(--blue);background:var(--blue-bg)">
       <div class="kpi-lbl">По v3-hybrid</div>
       <div class="kpi-val" style="color:var(--blue-hi)" id="kpi-rev">—</div>
-      <div class="kpi-sub">при сохранении объёмов</div>
+      <div class="kpi-sub">выручка при объёмах 2025</div>
+    </div>
+    <div class="kpi" style="border-color:var(--gold);background:var(--gold-bg)">
+      <div class="kpi-lbl">Маржа v3-hybrid</div>
+      <div class="kpi-val" style="color:var(--gold-hi)" id="kpi-mgn">—</div>
+      <div class="kpi-sub" id="kpi-mgn-sub">выручка − себестоимость</div>
     </div>
     <div class="kpi" style="border-color:var(--green);background:var(--green-bg)">
-      <div class="kpi-lbl">Прирост</div>
+      <div class="kpi-lbl">Прирост выручки</div>
       <div class="kpi-val pos" id="kpi-delta">—</div>
       <div class="kpi-sub" id="kpi-pct">—</div>
     </div>
@@ -329,16 +340,18 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <table class="ftable" id="fin-table">
       <thead><tr>
         <th>Категория</th><th>Цена</th><th>Заказов</th>
-        <th>Выручка матрица</th><th>Выручка факт (К1–К7)</th><th>vs факт</th>
+        <th>Выручка</th><th>Себест.</th><th>Маржа</th><th>vs факт</th>
       </tr></thead>
       <tbody id="fin-body"></tbody>
     </table>
   </div>
   <div class="insight">
-    <h3>📌 Нулевая категория в финансах</h3>
-    <p id="fin-insight">Категория «Посмотрим вместе» ($0) не добавляет прямой выручки.
-    Косвенный эффект: нерешительные клиенты получают бесплатную консультацию
-    и конвертируются в платный заказ. Оценка: +30–80 доп. заказов/год = +$1 500–$7 500.</p>
+    <h3>📌 Нулевая категория и себестоимость</h3>
+    <p id="fin-insight">Если перенести работу в «Посмотрим вместе» ($0): заказы <strong>считаются в объёме</strong>,
+    выручка = $0, а в колонке «Маржа» появляется <strong>минус себестоимости</strong> — мы оплачиваем эту работу сами.
+    Работы, помеченные <strong>⚡ AI/$0</strong> (резкость, ЧБ→цвет, кадрирование и т.п. через ИИ без дизайнера),
+    имеют себестоимость $0 и не просаживают маржу. Себестоимость каждой работы можно переопределить вручную
+    в блоке «💲 Себестоимость работ» на вкладке «Настройки».</p>
   </div>
 
   <!-- MONTHLY CHART -->
@@ -367,8 +380,21 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
   <div class="dnd-wrap">
     <div class="dnd-title">🔀 Состав категорий — перетаскивайте работы</div>
-    <div class="dnd-sub">Теги К1–К7 — исходная категория дизайнеров. «А» — из текстов Артёма. Перетаскивание пересчитывает финансы.</div>
+    <div class="dnd-sub">Теги К1–К7 — исходная категория дизайнеров. «А» — из текстов Артёма. ⚡ = себестоимость $0 (делаем через ИИ). Перетаскивание пересчитывает финансы.</div>
     <div class="dnd-grid" id="dnd-grid"></div>
+  </div>
+
+  <div class="dnd-wrap">
+    <div class="dnd-title">💲 Себестоимость работ</div>
+    <div class="dnd-sub">По умолчанию = себестоимость исходной категории. Можно переопределить вручную или пометить ⚡ AI/$0 (делаем через ИИ без дизайнера → $0). Влияет на маржу в реальном времени.</div>
+    <div style="overflow-x:auto;">
+      <table class="ftable" id="cost-table">
+        <thead><tr>
+          <th>Работа</th><th>Сейчас в</th><th>База</th><th>Себест./шт</th><th>AI/$0</th>
+        </tr></thead>
+        <tbody id="cost-body"></tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -451,7 +477,7 @@ const ALL_FEATS=[
   {id:'f17',srcK:3, share:.15,text:'Сложный фон (архитектура, текстуры)',artText:null},
   {id:'f18',srcK:3, share:.10,text:'Реставрация медиум (1 фото)',artText:null},
   {id:'f19',srcK:4, share:.35,text:'Комбинация 4–5 фото без замены тела',artText:'Каждое фото отдельно дорабатывается перед объединением'},
-  {id:'f20',srcK:4, share:.25,text:'Комбинация + реставрация медиум',artText:null},
+  {id:'f20',srcK:4, share:.25,text:'Комбинация + реставрация медиум',artText:null,alt:'restore'},
   {id:'f21',srcK:4, share:.20,text:'Замена тела (сложный ракурс) + 2 правки',artText:null},
   {id:'f22',srcK:4, share:.20,text:'Переодевание + сложный фон + улучшение',artText:null},
   {id:'f23',srcK:5, share:.30,text:'Полная реставрация + замена тела',artText:'Реставрация и работа с позой включены при необходимости'},
@@ -519,13 +545,13 @@ const DEFAULT_CATS = [
   },
   {
     id:'touch',color:'blue',name:'Touch Up',label:'Улучшение фото',
-    slogan:'«Одно фото — сделай красиво»',price:50,
-    feats:['f01','f02','f03','f04','f05','f06','f07','f08'],srcKeys:[1,2]
+    slogan:'«Одно фото — сделай красиво»',price:49,
+    feats:['f01','f02','f03','f04','f05','f06','f07','f08'],srcKeys:[1]
   },
   {
     id:'fusion',color:'green',name:'Reunion',label:'Объединение фото',
-    slogan:'«Собери всех вместе»',price:100,
-    feats:['f09','f10','f11','f12','f13','f14','f15','f16','f17','f18'],srcKeys:[3,4]
+    slogan:'«Собери всех вместе»',price:99,
+    feats:['f09','f10','f11','f12','f13','f14','f15','f16','f17','f18','f19','f20','f21','f22'],srcKeys:[2,3,4]
   },
   {
     id:'restore',color:'gold',name:'Restore',label:'Реставрация',
@@ -539,14 +565,20 @@ const DEFAULT_CATS = [
   },
 ];
 
-let CATS, FEAT_MAP;
+let CATS, FEAT_MAP, COST_OVR, AI_FREE;
 const STORAGE_KEY = 'portraithy_v3';
 let _dragFid = null;
 
 function loadState(){
   try{
     const s=localStorage.getItem(STORAGE_KEY);
-    if(s){const d=JSON.parse(s);CATS=d.cats;FEAT_MAP=d.featMap;return;}
+    if(s){
+      const d=JSON.parse(s);
+      CATS=d.cats; FEAT_MAP=d.featMap;
+      COST_OVR=d.costOvr||{}; AI_FREE=d.aiFree||{};
+      reconcileState();   // подхватить новые поля и вернуть потерянные работы из старого сохранения
+      return;
+    }
   }catch(e){}
   resetState();
 }
@@ -554,10 +586,28 @@ function resetState(){
   CATS=JSON.parse(JSON.stringify(DEFAULT_CATS));
   FEAT_MAP={};
   CATS.forEach(c=>{ FEAT_MAP[c.id]=c.feats.slice(); });
+  COST_OVR={}; AI_FREE={};
 }
 function saveState(){
-  localStorage.setItem(STORAGE_KEY,JSON.stringify({cats:CATS,featMap:FEAT_MAP}));
+  localStorage.setItem(STORAGE_KEY,JSON.stringify({cats:CATS,featMap:FEAT_MAP,costOvr:COST_OVR,aiFree:AI_FREE}));
   showSaved();
+}
+// Гарантия целостности: ни одна работа не должна остаться вне категорий.
+// Чинит старые сохранения localStorage, где К4 (f19–f22) была потеряна.
+function reconcileState(){
+  if(!Array.isArray(CATS)||!CATS.length){ resetState(); return; }
+  if(!FEAT_MAP) FEAT_MAP={};
+  if(!COST_OVR) COST_OVR={};
+  if(!AI_FREE) AI_FREE={};
+  CATS.forEach(c=>{ if(!FEAT_MAP[c.id]) FEAT_MAP[c.id]=[]; });
+  const assigned=new Set();
+  Object.values(FEAT_MAP).forEach(arr=>(arr||[]).forEach(f=>assigned.add(f)));
+  ALL_FEATS.forEach(f=>{
+    if(assigned.has(f.id)) return;
+    const dc=DEFAULT_CATS.find(d=>d.feats.includes(f.id));
+    const target=(dc&&FEAT_MAP[dc.id])?dc.id:(FEAT_MAP['fusion']?'fusion':CATS[0].id);
+    FEAT_MAP[target].push(f.id);
+  });
 }
 
 // ══════════════════════════════════════════════════════
@@ -584,7 +634,7 @@ function calcMonthlyMatrix(){
 }
 
 function calcMargin(catId, matrixPrice){
-  // weighted avg cost from source categories (cost side is fixed)
+  // weighted avg cost from source categories (учитывает AI/$0 и ручные переопределения)
   let totalOrders=0, totalCost=0, totalSrcRev=0;
   (FEAT_MAP[catId]||[]).forEach(fid=>{
     const f=ALL_FEATS.find(x=>x.id===fid);
@@ -593,7 +643,7 @@ function calcMargin(catId, matrixPrice){
     if(!s) return;
     const ord=s.orders*f.share;
     totalOrders+=ord;
-    totalCost+=ord*s.cost;
+    totalCost+=ord*featCostPer(fid);
     totalSrcRev+=ord*s.price;
   });
   if(totalOrders===0) return null;
@@ -611,8 +661,19 @@ function calcMargin(catId, matrixPrice){
   };
 }
 
+// ── себестоимость на уровне работы (за 1 заказ) ──
+// приоритет: флаг AI/$0  →  ручное переопределение  →  себест. исходной категории
+function featCostPer(fid){
+  const f=ALL_FEATS.find(x=>x.id===fid);
+  if(!f) return 0;
+  if(AI_FREE[fid]) return 0;
+  if(COST_OVR[fid]!=null) return COST_OVR[fid];
+  if(f.srcK==='a') return 0;
+  const s=SRC.find(x=>x.id===f.srcK);
+  return s?s.cost:0;
+}
 function calcOrders(catId){
-  if(CATS.find(c=>c.id===catId)?.isZero) return 0;
+  // нулевая категория ТОЖЕ считается (volume есть, выручка $0)
   let t=0;
   (FEAT_MAP[catId]||[]).forEach(fid=>{
     const f=ALL_FEATS.find(x=>x.id===fid);
@@ -632,16 +693,29 @@ function calcFactRev(catId){
   });
   return Math.round(t);
 }
+// себестоимость категории (с учётом AI/$0 и ручных переопределений)
+function calcCost(catId){
+  let t=0;
+  (FEAT_MAP[catId]||[]).forEach(fid=>{
+    const f=ALL_FEATS.find(x=>x.id===fid);
+    if(!f||f.srcK==='a') return;
+    const s=SRC.find(x=>x.id===f.srcK);
+    if(s) t+=s.orders*f.share*featCostPer(fid);
+  });
+  return Math.round(t);
+}
 function computeAll(){
-  let rev=0;
+  let rev=0, cost=0, mgn=0;
   const rows=CATS.map(c=>{
     const orders=calcOrders(c.id);
     const factRev=calcFactRev(c.id);
-    const matRev=c.isZero?0:orders*c.price;
-    rev+=matRev;
-    return{cat:c,orders,factRev,matRev,delta:matRev-factRev};
+    const matRev=orders*c.price;          // нулевая: price=0 → выручка 0
+    const catCost=calcCost(c.id);         // себестоимость считается всегда
+    const margin=matRev-catCost;          // нулевая: 0 - себест = минус себест
+    rev+=matRev; cost+=catCost; mgn+=margin;
+    return{cat:c,orders,factRev,matRev,cost:catCost,margin,delta:matRev-factRev};
   });
-  return{rev:Math.round(rev),rows};
+  return{rev:Math.round(rev),cost:Math.round(cost),mgn:Math.round(mgn),rows};
 }
 
 // ══════════════════════════════════════════════════════
@@ -682,8 +756,11 @@ function renderCards(){
         <hr class="card-sep">
         <ul class="feat-list">${feats||'<li><span style="color:var(--text3)">Нет работ в этой категории</span></li>'}</ul>
         <div class="card-footer">
-          ${c.isZero?'<span style="color:var(--teal-hi)">Точка входа · без оплаты · консультация</span>'
-            :`<div>~${orders.toLocaleString()} заказов · ~${pct}% от всех</div>`}
+          ${c.isZero
+            ? (orders>0
+                ? `<div style="color:var(--teal-hi)">Точка входа · бесплатно для клиента</div><div class="card-stats" style="color:var(--neg)">~${orders.toLocaleString()} заказов · себест. −${fmt(calcCost(c.id))}/год</div>`
+                : '<span style="color:var(--teal-hi)">Точка входа · без оплаты · консультация</span>')
+            : `<div>~${orders.toLocaleString()} заказов · ~${pct}% от всех</div>`}
         </div>
       </div>`;
     g.appendChild(div);
@@ -691,7 +768,7 @@ function renderCards(){
 }
 
 function renderFinance(){
-  const {rev,rows}=computeAll();
+  const {rev,cost,mgn,rows}=computeAll();
   const delta=rev-BASE_REV;
   const pct=(delta/BASE_REV*100).toFixed(1);
   document.getElementById('kpi-rev').textContent=fmt(rev);
@@ -700,29 +777,46 @@ function renderFinance(){
   el.className=delta>=0?'kpi-val pos':'kpi-val neg';
   document.getElementById('kpi-pct').textContent=(delta>=0?'+':'')+pct+'% к факту 2025';
 
+  const mEl=document.getElementById('kpi-mgn');
+  if(mEl){
+    mEl.textContent=fmt(mgn);
+    mEl.style.color=mgn>=0?'var(--gold-hi)':'var(--neg)';
+    const mPct=rev>0?(mgn/rev*100).toFixed(0):'0';
+    document.getElementById('kpi-mgn-sub').textContent=`себест. ${fmt(cost)} · маржа ${mPct}%`;
+  }
+
   const tb=document.getElementById('fin-body');
   tb.innerHTML='';
-  let totOrd=0,totMat=0,totFact=0;
+  let totOrd=0,totMat=0,totCost=0,totMgn=0;
   rows.forEach(r=>{
-    totOrd+=r.orders; totMat+=r.matRev; totFact+=r.factRev;
+    totOrd+=r.orders; totMat+=r.matRev; totCost+=r.cost; totMgn+=r.margin;
     const tr=document.createElement('tr');
     const colorMap={blue:'row-blue',green:'row-green',gold:'row-gold',gray:'row-gray',teal:'row-teal'};
     tr.className=colorMap[r.cat.color]||'row-blue';
     const d=r.matRev-r.factRev;
+    const hasWork=r.orders>0;
+    const marginCls=r.margin>0?'pos':r.margin<0?'neg':'neu';
     tr.innerHTML=`
       <td><strong style="color:${colorOf(r.cat.color)}">${r.cat.name}</strong>${r.cat.isZero?' <span style="font-size:9px;color:var(--teal-hi)">(нулевой вход)</span>':''}</td>
       <td class="mono">${r.cat.isZero?'$0':'$'+r.cat.price}</td>
-      <td class="mono">${r.cat.isZero?'—':r.orders.toLocaleString()}</td>
-      <td class="mono ${r.cat.isZero?'neu':'pos'}">${r.cat.isZero?'$0 (консультация)':fmt(r.matRev)}</td>
-      <td class="mono neu">${r.cat.isZero?'—':fmt(r.factRev)}</td>
-      <td class="mono ${d>=0&&!r.cat.isZero?'pos':r.cat.isZero?'neu':'neg'}">${r.cat.isZero?'—':(d>=0?'+':'')+fmt(d)}</td>`;
+      <td class="mono">${hasWork?r.orders.toLocaleString():'—'}</td>
+      <td class="mono ${r.cat.isZero?'neu':'pos'}">${r.cat.isZero?(hasWork?'$0 (бесплатно)':'$0'):fmt(r.matRev)}</td>
+      <td class="mono ${r.cost>0?'neg':'neu'}">${r.cost>0?'−'+fmt(r.cost):'$0'}</td>
+      <td class="mono ${marginCls}">${r.margin<0?'−'+fmt(r.margin):(r.margin>0?'+':'')+fmt(r.margin)}</td>
+      <td class="mono ${r.cat.isZero?'neu':(d>=0?'pos':'neg')}">${r.cat.isZero?'—':(d>=0?'+':'')+fmt(d)}</td>`;
     tb.appendChild(tr);
   });
   const tot=document.createElement('tr');
   tot.className='row-total';
-  // KPI delta = rev - BASE_REV; table ИТОГО must use same BASE_REV so numbers match
+  // ИТОГО vs факт считаем от BASE_REV (базовая линия 2025), чтобы цифры совпадали с KPI
   const td=totMat-BASE_REV;
-  tot.innerHTML=`<td>ИТОГО</td><td></td><td class="mono">~${totOrd.toLocaleString()}</td><td class="mono pos">${fmt(totMat)}</td><td class="mono neu">${fmt(BASE_REV)} <span style="font-size:9px;color:var(--text3)">(факт 2025)</span></td><td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
+  const totMgnCls=totMgn>=0?'pos':'neg';
+  tot.innerHTML=`<td>ИТОГО</td><td></td>`+
+    `<td class="mono">~${totOrd.toLocaleString()}</td>`+
+    `<td class="mono pos">${fmt(totMat)}</td>`+
+    `<td class="mono ${totCost>0?'neg':'neu'}">${totCost>0?'−'+fmt(totCost):'$0'}</td>`+
+    `<td class="mono ${totMgnCls}">${totMgn<0?'−'+fmt(totMgn):'+'+fmt(totMgn)}</td>`+
+    `<td class="mono ${td>=0?'pos':'neg'}">${(td>=0?'+':'')+fmt(td)}</td>`;
   tb.appendChild(tot);
 
   // Monthly chart
@@ -838,6 +932,56 @@ function renderSettings(){
     (FEAT_MAP[c.id]||[]).forEach(fid=>{ items.appendChild(makeDndItem(fid)); });
     setupDrop(items);
   });
+
+  renderCostEditor();
+}
+
+function catOfFeat(fid){
+  for(const c of CATS){ if((FEAT_MAP[c.id]||[]).includes(fid)) return c; }
+  return null;
+}
+function renderCostEditor(){
+  const body=document.getElementById('cost-body');
+  if(!body) return;
+  body.innerHTML='';
+  ALL_FEATS.filter(f=>f.srcK!=='a').forEach(f=>{
+    const fid=f.id;
+    const s=SRC.find(x=>x.id===f.srcK);
+    const base=s?s.cost:0;
+    const isAI=!!AI_FREE[fid];
+    const ovr=COST_OVR[fid];
+    const curVal=isAI?0:(ovr!=null?ovr:base);
+    const cat=catOfFeat(fid);
+    const catLbl=cat?`<span style="color:${colorOf(cat.color)}">${cat.name}</span>`:'<span class="neu">—</span>';
+    const tr=document.createElement('tr');
+    tr.className='row-gray';
+    tr.innerHTML=`
+      <td><span class="src-badge sk${f.srcK}" style="margin-right:6px">К${f.srcK}</span>${f.text}</td>
+      <td>${catLbl}</td>
+      <td class="mono neu">$${base}</td>
+      <td class="mono">
+        <span class="price-dollar" style="font-size:12px">$</span>
+        <input type="number" min="0" max="9999" step="0.1" value="${curVal}"
+          ${isAI?'disabled style="opacity:.4;width:64px" ':'style="width:64px" '}
+          class="price-inp" id="cost-${fid}"
+          onchange="setCost('${fid}',this.value)">
+      </td>
+      <td><label style="cursor:pointer;display:inline-flex;align-items:center;gap:5px;font-size:11px;color:${isAI?'var(--teal-hi)':'var(--text3)'}">
+        <input type="checkbox" ${isAI?'checked':''} onchange="setAI('${fid}',this.checked)" style="accent-color:var(--teal-hi)">⚡ AI
+      </label></td>`;
+    body.appendChild(tr);
+  });
+}
+function setCost(fid,val){
+  if(val===''||val==null){ delete COST_OVR[fid]; }
+  else { COST_OVR[fid]=Math.max(0,parseFloat(val)||0); }
+  markChanged();
+  renderAll();
+}
+function setAI(fid,on){
+  AI_FREE[fid]=!!on;
+  markChanged();
+  renderAll();
 }
 
 function makeDndItem(fid){
@@ -848,11 +992,25 @@ function makeDndItem(fid){
   const k=f.srcK;
   const badgeCls=k==='a'?'sa':`sk${k}`;
   const approx=k==='a'?0:Math.round((SRC.find(s=>s.id===k)||{orders:0}).orders*f.share);
-  el.innerHTML=`<span class="src-badge ${badgeCls}">${k==='a'?'А':'К'+k}</span><span class="feat-text">${f.text}</span>${approx>0?`<span class="ord-chip">~${approx}</span>`:''}`;
+  const isAI=!!AI_FREE[fid];
+  const costPer=featCostPer(fid);
+  const aiBtn=k==='a'?'':`<span class="ai-toggle ${isAI?'on':''}" data-fid="${fid}" title="${isAI?'AI/$0 — себест. 0':'Сделать AI/$0 (себест. 0)'}">⚡</span>`;
+  const costChip=k==='a'?'':`<span class="cost-chip ${isAI?'free':''}">${isAI?'$0':'$'+costPer}</span>`;
+  const altHint=f.alt?`<span class="alt-hint" title="Можно отнести в Restore">↦${f.alt==='restore'?'Restore?':f.alt}</span>`:'';
+  el.innerHTML=`<span class="src-badge ${badgeCls}">${k==='a'?'А':'К'+k}</span>`+
+    `<span class="feat-text">${f.text}${altHint}</span>`+
+    `${approx>0?`<span class="ord-chip">~${approx}</span>`:''}${costChip}${aiBtn}`;
   el.addEventListener('dragstart',e=>{_dragFid=fid;el.classList.add('dragging');e.dataTransfer.setData('text/plain',fid);});
   el.addEventListener('dragend',()=>el.classList.remove('dragging'));
+  const ai=el.querySelector('.ai-toggle');
+  if(ai){
+    ai.draggable=false;
+    ai.addEventListener('mousedown',e=>e.stopPropagation());
+    ai.addEventListener('click',e=>{e.stopPropagation();toggleAI(fid);});
+  }
   return el;
 }
+function toggleAI(fid){ AI_FREE[fid]=!AI_FREE[fid]; markChanged(); renderAll(); }
 
 function setupDrop(el){
   el.addEventListener('dragover',e=>{e.preventDefault();el.closest('.dnd-col').classList.add('drag-over');});
@@ -888,7 +1046,7 @@ const FINAL_DESCS = {
     {src:'A',text:'Никаких доплат, пока вы не подтвердите'},
     {src:'V',text:'Менеджер консультирует бесплатно — без обязательств'},
   ]},
-  touch:{name:'Touch Up',price:'$50',label:'Улучшение фото',color:'blue',items:[
+  touch:{name:'Touch Up',price:'$49',label:'Улучшение фото',color:'blue',items:[
     {src:'A',text:'Чёткость и детализация улучшены для более выразительного результата'},
     {src:'A',text:'Освещение и фон скорректированы при необходимости'},
     {src:'A',text:'Чёрно-белое фото переведено в цветное'},
@@ -896,7 +1054,7 @@ const FINAL_DESCS = {
     {src:'A',text:'Небольшие правки по одежде или деталям образа'},
     {src:'E',text:'Одно фото. Базовое улучшение без объединения или реставрации.',note:'Уточнение: Артём не ограничивает количество фото явно'},
   ]},
-  fusion:{name:'Reunion',price:'$100',label:'Объединение фото',color:'green',items:[
+  fusion:{name:'Reunion',price:'$99',label:'Объединение фото',color:'green',items:[
     {src:'A',text:'Два фото объединяются в единую сбалансированную композицию'},
     {src:'A',text:'Позы и пропорции выстраиваются так, чтобы выглядело как один реальный момент'},
     {src:'A',text:'Несколько людей или референсов — в одну сцену'},
